@@ -2,36 +2,32 @@ import express from 'express';
 import React from 'react';
 import App from '../source/App.js';
 import { renderToString } from 'react-dom/server';
+import { template } from './template.js';
+import mongoose from 'mongoose';
+import { database } from './database';
 
 const app = express();
 
 app.use(express.static('client'));
 
-const template = (title, body) => {
-    return `<!doctype html>
-        <html>
-            <head>
-                <title>${title}</title>
-            </head>
-            <body>
-                <style>
-                    #root {
-                        display: none;
-                    }
-                </style>
-                <div id='root'>${body}</div>
-            </body>
-            <script src='app.js'></script>
-            <script>
-                document.getElementById('root').style.display = "block";
-            </script>
-        </html>`;
-}
-
 app.get('/*', (req, res) => {
-    let body = renderToString(<App />);
-    let page = template('My favorite books', body);
-    res.send(page);
+    database.getBooks(
+        err => console.err(err),
+        books => {
+            let body = renderToString(<App books={books}/>);
+            console.log(body)
+            let page = template('My favorite books', body, books);
+            res.send(page);
+        }
+    )
+    
 })
 
-app.listen('3000', () => console.log('Server listening at 3000'));
+mongoose.connect('mongodb://localhost:27017/favbooks');
+const db = mongoose.connection;
+
+db.on('error', console.error.bind(console, 'connection error'));
+db.once('open', () => {
+    console.log('Database connected');
+    app.listen('3000', () => console.log('Server listening at 3000'));
+});

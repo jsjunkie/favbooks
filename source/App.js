@@ -3,23 +3,24 @@ import './App.css';
 import Card from './Card.js';
 
 class App extends Component {
-  constructor () {
-    super();
-
-    this.state = {
-      books: [
-        { key: 1, title: "Harry Potter", votes: 10 },
-        { key: 2, title: "The Art of War", votes: 11 },
-        { key: 3, title: "Think and Grow Rich", votes: 12 },
-        { key: 4, title: "The Guide to Travelling", votes: 14 }
-      ]
+  constructor (props) {
+    super(props);
+    let books;
+    if (props.books) {
+      books = props.books;
+    } else {
+      books = window._initialData;
+      delete window._initialData;
     }
+
+    this.state = { books: books };
+    
   }
 
   changeVotes (book, incr) {
     let books = this.state.books.map(item => {
-      if (item.key === book.key) {
-        return Object.assign({}, book, {votes: incr ? book.votes + 1 : book.votes - 1});
+      if (item._id === book._id) {
+        return Object.assign({}, book, {votes: incr ? book.votes + 1 : book.votes - 1 < 0 ? 0 : book.votes - 1});
       } else {
         return item;
       }
@@ -29,14 +30,15 @@ class App extends Component {
   }
 
   render() {
-    return (
-      <div className="App">
-        <h1>My favorite books</h1>
-        {this.state.books.map(book => <Card {...book} 
-                                            upvote={() => this.changeVotes(book, true)}
-                                            downvote={() => this.changeVotes(book, false)}/>)}
-      </div>
-    );
+      return (
+        <div className="App">
+          <h1>My favorite books</h1>
+          {this.state.books.map(book => <Card {...book} 
+                                              upvote={() => this.changeVotes(book, true)}
+                                              downvote={() => this.changeVotes(book, false)}/>)}
+        </div>
+      );
+    
   }
 }
 
