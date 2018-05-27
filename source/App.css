@@ -1,5 +1,18 @@
 .App {
   text-align: center;
-  padding: 10px;
 }
 
+.nav {
+  list-style-type: none;
+}
+
+.nav li {
+  display: inline;
+  text-decoration: none;
+  padding: 10px;
+  margin: 10px;
+}
+
+.nav a {
+  text-decoration: none;
+}
