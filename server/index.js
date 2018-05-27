@@ -28,7 +28,7 @@ const template = (title, body) => {
         </html>`;
 }
 
-app.get('/', (req, res) => {
+app.get('/*', (req, res) => {
     let body = renderToString(<App />);
     let page = template('My favorite books', body);
     res.send(page);
