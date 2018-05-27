@@ -15,7 +15,6 @@ app.get('/*', (req, res) => {
         err => console.err(err),
         books => {
             let body = renderToString(<App books={books}/>);
-            console.log(body)
             let page = template('My favorite books', body, books);
             res.send(page);
         }
