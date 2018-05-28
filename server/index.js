@@ -5,6 +5,7 @@ import { renderToString } from 'react-dom/server';
 import { template } from './template.js';
 import mongoose from 'mongoose';
 import { database } from './database';
+import { StaticRouter } from 'react-router';
 
 const app = express();
 
@@ -14,7 +15,11 @@ app.get('/*', (req, res) => {
     database.getBooks(
         err => console.err(err),
         books => {
-            let body = renderToString(<App books={books}/>);
+            let context = {};
+            let body = renderToString(
+                <StaticRouter location={req.url} context={context}>
+                    <App books={books}/>
+                </StaticRouter>);
             let page = template('My favorite books', body, books);
             res.send(page);
         }

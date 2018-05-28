@@ -13,8 +13,8 @@ class Main extends Component {
           delete window._initialData;
         }
     
-        //this.state = { books: books };
-        this.state = { books: [{_id: 1, title: "a", votes: 2}]};
+        this.state = { books: books };
+        //this.state = { books: [{_id: 1, title: "a", votes: 2}]};
       }
     
       changeVotes (book, incr) {

@@ -12,7 +12,7 @@ class App extends Component {
           <li><Link to="/">Home</Link></li>
           <li><Link to="/read">Read</Link></li>
         </ul>
-          <Route exact path="/" component={Main} />
+          <Route exact path="/" render={props => <Main {...props} books={this.props.books} />} />
           <Route path="/read" component={Read} />
       </div>
     )
