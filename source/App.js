@@ -32,7 +32,9 @@ class App extends Component {
   render() {
       return (
         <div className="App">
-          <h1>My favorite books</h1>
+          <div className="AppHeader">
+            <h1 className="AppTitle">My Favorite Books</h1>
+          </div>
           {this.state.books.map(book => <Card {...book} 
                                               upvote={() => this.changeVotes(book, true)}
                                               downvote={() => this.changeVotes(book, false)}/>)}

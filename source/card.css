@@ -1,27 +1,40 @@
 .card {
-	width: 230px;
-	height: auto;
+	width: 240px;
+	height: 260px;
 	display: inline-block;
 	border: 1px solid gray;
 	margin: 10px;
 	padding: 10px;
 	border-radius: 4px;
-	box-shadow: 2px 1px 1px #dedede;
+	box-shadow: 2px 2px 2px gray;
+	position: relative;
+	overflow: hidden;
 }
 
 .card-title {
-	font-size: 20px;
-	padding-top: 10px;
+	font-size: 25px;
+	padding-top: 20px;
 	padding-bottom: 10px;
+	font-family: Georgia, 'Times New Roman', Times, sans-serif
 }
 
 .card-button {
 	padding: 10px;
-	width: 80px;
+	width: 90px;
 	margin: 10px;
 	margin-top: 20px;
 	cursor: pointer;
-	font-size: 12px;
+	font-size: 14px;
+	position: absolute;
+	bottom: 10px;
+}
+
+.button-left {
+	left: 20px;
+}
+
+.button-right {
+	right: 20px;
 }
 
 .card-button:hover {
@@ -29,15 +42,22 @@
 	color: blue;
 }
 
+.card-button:focus {
+	outline: none;
+}
+
 .card-votes {
 	border: 1px solid #dedede;
-	height: 30px;
+	height: 40px;
 	padding: 5px;
 	padding-top: 10px;
-	width: 30px;
+	width: 40px;
 	margin: 5px auto;
 	border-radius: 4px;
 	background-color: orange;
 	color: blue;
-	font-size: 20px;
+	font-size: 30px;
+	position: absolute;
+	bottom: 75px;
+	left: 100px;
 }

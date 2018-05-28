@@ -9,8 +9,8 @@ class Card extends Component {
 					{this.props.title}
 				</div>
 				<div className="card-votes">{this.props.votes}</div>
-				<button className="card-button" onClick={() => this.props.upvote()}>Upvote</button>
-				<button className="card-button" onClick={() => this.props.downvote()}>Downvote</button>
+				<button className="card-button button-left" onClick={() => this.props.upvote()}>Upvote</button>
+				<button className="card-button button-right" onClick={() => this.props.downvote()}>Downvote</button>
 			</div>);
 	}
 }

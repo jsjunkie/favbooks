@@ -1,5 +1,15 @@
 .App {
   text-align: center;
   padding: 10px;
+  margin: 0 30px;
 }
 
+.AppHeader {
+  height: 150px;
+  padding-top: 30px;
+}
+
+.AppTitle {
+  font-size: 55px;
+  font-family: helvetica sans-serif;
+}
