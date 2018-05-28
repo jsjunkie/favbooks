@@ -22,7 +22,7 @@ app.get('/*', (req, res) => {
     
 })
 
-mongoose.connect('mongodb://localhost:27017/favbooks');
+mongoose.connect(process.env.MONGODB);
 const db = mongoose.connection;
 
 db.on('error', console.error.bind(console, 'connection error'));
