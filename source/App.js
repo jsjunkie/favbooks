@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
 import Card from './Card.js';
+import AddCard from './AddCard.js';
 
 class App extends Component {
   constructor (props) {
@@ -13,7 +14,7 @@ class App extends Component {
       delete window._initialData;
     }
 
-    this.state = { books: books };
+    this.state = { books: books, addcard: false };
     
   }
 
@@ -29,6 +30,11 @@ class App extends Component {
     this.setState({books});
   }
 
+  showAddCard () {
+    debugger;
+    this.setState({addcard: true});
+  }
+
   render() {
       return (
         <div className="App">
@@ -38,6 +44,8 @@ class App extends Component {
           {this.state.books.map(book => <Card {...book} 
                                               upvote={() => this.changeVotes(book, true)}
                                               downvote={() => this.changeVotes(book, false)}/>)}
+          <span className="AddButton" onClick={() => this.showAddCard()}>+</span>
+          {this.state.addcard ? <div className="ShowAddCard"><div style={{position: 'relative'}}><AddCard closeAddCard={() => this.setState({addcard: false})}/></div></div> : ''}
         </div>
       );
     

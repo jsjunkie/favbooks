@@ -1,0 +1,67 @@
+.AddCard {
+    position: absolute;
+    top: 230px;
+    left: 32%;
+    width: 500px;
+    height: 250px;
+    border: 1px solid #dedede;
+    border-radius: 2px;
+    background: white;
+    z-index: 2;
+}
+
+.AddCardField {
+    width: 400px;
+    height: 50px;
+    font-size: 25px;
+    display: block;
+    margin: 0 auto;
+    border-radius: 2px;
+    padding-left: 10px;
+}
+
+.AddCardField:focus {
+    outline: none;
+}
+
+.AddCardButton {
+    width: 150px;
+    font-size: 38px;
+    margin: 20px;
+    background: orange;
+    color: blue;
+    border-radius: 2px;
+    cursor: pointer;
+}
+
+.AddCardButton:focus {
+    outline: none;
+}
+
+.AddCardButton:hover {
+    background: white;
+    border: 2px solid orange;
+}
+
+.AddCardTitle {
+    font-size: 30px;
+    font-family: Helvetica sans-serif;
+    background: orange;
+    margin-bottom: 35px;
+    border-bottom: 1px solid blue;
+    padding: 5px;
+    position: relative;
+}
+
+.CloseAddCard {
+    border: 2px solid blue;
+    border-radius: 50%;
+    padding-left: 8px;
+    padding-right: 8px;
+    color: red;
+    background: white;
+    position: absolute;
+    right: 2px;
+    cursor: pointer;
+    font-family: sans-serif;
+}
