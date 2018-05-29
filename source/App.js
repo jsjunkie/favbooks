@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import './App.css';
 import Card from './Card.js';
 import AddCard from './AddCard.js';
+import { service } from './service.js';
 
 class App extends Component {
   constructor (props) {
@@ -14,8 +15,7 @@ class App extends Component {
       delete window._initialData;
     }
 
-    this.state = { books: books, addcard: false };
-    
+    this.state = { books: books, addcard: false, newTitle: '' };
   }
 
   changeVotes (book, incr) {
@@ -31,8 +31,25 @@ class App extends Component {
   }
 
   showAddCard () {
-    debugger;
     this.setState({addcard: true});
+  }
+
+  addBook () {
+    if (this.state.newTitle !== ''){
+      var newBook = { title: this.state.newTitle };
+      service.addBook(newBook)
+        .then(response => response.json())
+        .then(book => {
+          let books = this.state.books.slice();
+          books.push(book);
+          this.setState({books, addcard: false, newTitle: ''});
+        })
+        .catch(err => console.log(err));
+    }
+  }
+
+  textChange (value) {
+    this.setState({newTitle: value});
   }
 
   render() {
@@ -45,7 +62,12 @@ class App extends Component {
                                               upvote={() => this.changeVotes(book, true)}
                                               downvote={() => this.changeVotes(book, false)}/>)}
           <span className="AddButton" onClick={() => this.showAddCard()}>+</span>
-          {this.state.addcard ? <div className="ShowAddCard"><div style={{position: 'relative'}}><AddCard closeAddCard={() => this.setState({addcard: false})}/></div></div> : ''}
+          {this.state.addcard ? 
+            <div className="ShowAddCard">
+              <div style={{position: 'relative'}}>
+                <AddCard closeAddCard={() => this.setState({addcard: false})} title={this.state.newTitle} addBook={() => this.addBook()} textChange={(value) => this.textChange(value)}/>
+              </div>
+            </div> : ''}
         </div>
       );
     

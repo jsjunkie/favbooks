@@ -1,4 +1,5 @@
 import express from 'express';
+import bodyParser from 'body-parser';
 import React from 'react';
 import App from '../source/App.js';
 import { renderToString } from 'react-dom/server';
@@ -8,7 +9,16 @@ import { database } from './database';
 
 const app = express();
 
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json())
+
 app.use(express.static('client'));
+
+app.post('/book', (req, res) => {
+    if (req.body && req.body.title) {
+        database.addBook(req.body.title, err => console.log(err), book => res.send(book));
+    }
+});
 
 app.get('/*', (req, res) => {
     database.getBooks(
