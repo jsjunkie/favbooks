@@ -1,11 +1,12 @@
 .App {
   text-align: center;
   padding: 10px;
-  margin: 0 30px;
+  max-width: 90%;
+  margin: 0 auto;
 }
 
 .AppHeader {
-  height: 150px;
+  height: auto;
   padding-top: 30px;
 }
 
