@@ -2,3 +2,4 @@ node_modules
 .DS_Store
 todos
 server2.js
+index.html

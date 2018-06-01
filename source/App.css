@@ -5,11 +5,6 @@
   margin: 0 auto;
 }
 
-.AppHeader {
-  height: auto;
-  padding-top: 30px;
-}
-
 .AppTitle {
   font-size: 55px;
   font-family: helvetica sans-serif;
@@ -26,6 +21,7 @@
   right: 50px;
   font-size: 37px;
   cursor: pointer;
+  line-height: 1.25;
 }
 
 .AddButton:hover {

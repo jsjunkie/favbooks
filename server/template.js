@@ -3,6 +3,7 @@ export const template = (title, body, initialData) => {
         <html>
             <head>
                 <title>${title}</title>
+                <link rel="stylesheet" href="bootstrap-4.1.1-dist/css/bootstrap.min.css" >
             </head>
             <body>
                 <style>
@@ -13,6 +14,8 @@ export const template = (title, body, initialData) => {
                 <div id='root'>${body}</div>
             </body>
             <script>window._initialData=${JSON.stringify(initialData)};</script>
+            <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+            <script src="bootstrap-4.1.1-dist/js/bootstrap.min.js" ></script>
             <script src='app.js'></script>
             <script>
                 document.getElementById('root').style.display = "block";

@@ -55,8 +55,11 @@ class App extends Component {
   render() {
       return (
         <div className="App">
-          <div className="AppHeader">
-            <h1 className="AppTitle">My Favorite Books</h1>
+          <div class="jumbotron jumbotron-fluid AppHeader">
+            <div class="container">
+              <h1 class="display-4 AppTitle">FavBooks</h1>
+              <p class="lead">List And Vote On Your Favorite Books</p>
+            </div>
           </div>
           {this.state.books.map(book => <Card {...book} 
                                               upvote={() => this.changeVotes(book, true)}
