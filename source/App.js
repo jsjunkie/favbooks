@@ -16,6 +16,10 @@ class App extends Component {
     }
 
     this.state = { books: books, addcard: false, newTitle: '' };
+
+    this.showAddCard = this.showAddCard.bind(this);
+    this.addBook = this.addBook.bind(this);
+    this.closeAddCard = this.closeAddCard.bind(this);
   }
 
   changeVotes (book, incr) {
@@ -52,6 +56,10 @@ class App extends Component {
     this.setState({newTitle: value});
   }
 
+  closeAddCard () {
+    this.setState({addcard: false});
+  }
+
   render() {
       return (
         <div className="App">
@@ -64,11 +72,11 @@ class App extends Component {
           {this.state.books.map(book => <Card {...book} 
                                               upvote={() => this.changeVotes(book, true)}
                                               downvote={() => this.changeVotes(book, false)}/>)}
-          <span className="AddButton" onClick={() => this.showAddCard()}>+</span>
+          <span className="AddButton" onClick={this.showAddCard}>+</span>
           {this.state.addcard ? 
             <div className="ShowAddCard">
               <div style={{position: 'relative'}}>
-                <AddCard closeAddCard={() => this.setState({addcard: false})} title={this.state.newTitle} addBook={() => this.addBook()} textChange={(value) => this.textChange(value)}/>
+                <AddCard closeAddCard={this.closeAddCard} title={this.state.newTitle} addBook={this.addBook} textChange={(value) => this.textChange(value)}/>
               </div>
             </div> : ''}
         </div>
