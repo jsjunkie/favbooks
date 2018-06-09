@@ -10,15 +10,30 @@ class AddCard extends Component{
 
     render () {
         return (
-            <div className="AddCard">
-                <div className="AddCardTitle">
-                    <span>Add a book</span>
-                    <span className="CloseAddCard" onClick={() => this.props.closeAddCard()}>X</span>
+            <div class="modal fade" id="addCard" tabindex="-1" role="dialog" aria-labelledby="addCard" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header AddCardTitle">
+                    <h5 class="modal-title" id="exampleModalLabel">Add a book</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    </div>
+                    <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                        <input type="text" class="form-control" id="book-title" placeholder="Book title.." value={this.props.title} onChange={(event) => this.props.textChange(event.target.value)} />
+                        </div>
+                        <div class="form-group">
+                        <input type="text" class="form-control" id="author" placeholder="Author.." value="Jon Doe" />
+                        </div>
+                    </form>
+                    </div>
+                    <div class="modal-footer">
+                    <button type="button" class="btn btn-primary AddCardButton"  data-dismiss="modal" onClick={(e) => this.addBook(e)}>Add</button>
+                    </div>
                 </div>
-                <form>
-                    <input className="AddCardField" type="text" placeholder="Book Title.." value={this.props.title} onChange={(event) => this.props.textChange(event.target.value)}/>
-                    <input className="AddCardButton" type="submit" value="Add" onClick={(e) => this.addBook(e)}/>
-                </form>
+                </div>
             </div>
         )
     }

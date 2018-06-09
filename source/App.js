@@ -15,11 +15,9 @@ class App extends Component {
       delete window._initialData;
     }
 
-    this.state = { books: books, addcard: false, newTitle: '' };
+    this.state = { books: books, newTitle: '' };
 
-    this.showAddCard = this.showAddCard.bind(this);
     this.addBook = this.addBook.bind(this);
-    this.closeAddCard = this.closeAddCard.bind(this);
   }
 
   changeVotes (book, incr) {
@@ -34,10 +32,6 @@ class App extends Component {
     this.setState({books});
   }
 
-  showAddCard () {
-    this.setState({addcard: true});
-  }
-
   addBook () {
     if (this.state.newTitle !== ''){
       var newBook = { title: this.state.newTitle };
@@ -46,7 +40,7 @@ class App extends Component {
         .then(book => {
           let books = this.state.books.slice();
           books.push(book);
-          this.setState({books, addcard: false, newTitle: ''});
+          this.setState({books, newTitle: ''});
         })
         .catch(err => console.log(err));
     }
@@ -54,10 +48,6 @@ class App extends Component {
 
   textChange (value) {
     this.setState({newTitle: value});
-  }
-
-  closeAddCard () {
-    this.setState({addcard: false});
   }
 
   render() {
@@ -72,13 +62,9 @@ class App extends Component {
           {this.state.books.map(book => <Card {...book} 
                                               upvote={() => this.changeVotes(book, true)}
                                               downvote={() => this.changeVotes(book, false)}/>)}
-          <span className="AddButton" onClick={this.showAddCard}>+</span>
-          {this.state.addcard ? 
-            <div className="ShowAddCard">
-              <div style={{position: 'relative'}}>
-                <AddCard closeAddCard={this.closeAddCard} title={this.state.newTitle} addBook={this.addBook} textChange={(value) => this.textChange(value)}/>
-              </div>
-            </div> : ''}
+          <span className="AddButton" data-toggle="modal" data-target="#addCard">+</span>
+            
+          <AddCard title={this.state.newTitle} addBook={this.addBook} textChange={(value) => this.textChange(value)}/>
         </div>
       );
     
