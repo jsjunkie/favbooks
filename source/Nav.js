@@ -18,7 +18,7 @@ export default class Nav extends Component {
                             <a class="nav-link" href="#">Login</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Sign up</a>
+                            <a class="nav-link btn-primary" style={{color: 'white'}} href="#">Sign up</a>
                         </li>
                     </ul>     
                 </div>
