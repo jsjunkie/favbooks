@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import './App.css';
 import Card from './Card.js';
 import AddCard from './AddCard.js';
+import Nav from './Nav.js';
 import { service } from './service.js';
 
 class App extends Component {
@@ -53,15 +54,12 @@ class App extends Component {
   render() {
       return (
         <div className="App">
-          <div class="jumbotron jumbotron-fluid AppHeader">
-            <div class="container">
-              <h1 class="display-4 AppTitle">FavBooks</h1>
-              <p class="lead">List And Vote On Your Favorite Books</p>
-            </div>
-          </div>
+          <Nav />
+          <div style={{marginTop: 120}}>
           {this.state.books.map(book => <Card {...book} 
                                               upvote={() => this.changeVotes(book, true)}
                                               downvote={() => this.changeVotes(book, false)}/>)}
+          </div>
           <span className="AddButton" data-toggle="modal" data-target="#addCard">+</span>
             
           <AddCard title={this.state.newTitle} addBook={this.addBook} textChange={(value) => this.textChange(value)}/>
