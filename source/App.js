@@ -4,6 +4,7 @@ import Card from './Card.js';
 import AddCard from './AddCard.js';
 import Nav from './Nav.js';
 import Login from './Login.js';
+import Search from './Search.js';
 import { service } from './service.js';
 
 class App extends Component {
@@ -91,7 +92,8 @@ class App extends Component {
         <div className="App">
           <Nav login={this.showLogin} signup={this.showSignup}/>
           {this.state.showLogin || this.state.showSignup ? <Login signup={this.state.showSignup} togglePanel={this.togglePanel}/> : ''}
-          <div style={{marginTop: 120}}>
+          <Search />
+          <div style={{marginTop: 60}}>
           {this.state.books.map(book => <Card {...book} 
                                               upvote={() => this.changeVotes(book, true)}
                                               downvote={() => this.changeVotes(book, false)}/>)}
