@@ -29,7 +29,29 @@ let addBook = (title, errorCallback, callback) => {
     })
 };
 
+let voteBook = (id, upvote, errorCallback, callback) => {
+    Book.findById(id, (err, book) => {
+        if (err) {
+            errorCallback(err);
+            return;
+        }
+
+        let votes = upvote ? book.votes + 1 : book.votes - 1;
+        book.set({votes});
+
+        book.save((err, updatedBook) => {
+            if (err) {
+                errorCallback(err);
+                return;
+            }
+
+            callback(updatedBook);
+        });
+    })
+};
+
 export const database = {
     getBooks: getBooks,
-    addBook: addBook
+    addBook: addBook,
+    voteBook: voteBook
 }

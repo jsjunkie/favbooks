@@ -3,6 +3,7 @@ import './App.css';
 import Card from './Card.js';
 import AddCard from './AddCard.js';
 import Nav from './Nav.js';
+import Login from './Login.js';
 import { service } from './service.js';
 
 class App extends Component {
@@ -16,21 +17,30 @@ class App extends Component {
       delete window._initialData;
     }
 
-    this.state = { books: books, newTitle: '' };
+    this.state = { books: books, newTitle: '', showLogin: false, showSignup: false };
 
     this.addBook = this.addBook.bind(this);
+    this.showLogin = this.showLogin.bind(this);
+    this.showSignup = this.showSignup.bind(this);
+    this.togglePanel = this.togglePanel.bind(this);
   }
 
   changeVotes (book, incr) {
-    let books = this.state.books.map(item => {
-      if (item._id === book._id) {
-        return Object.assign({}, book, {votes: incr ? book.votes + 1 : book.votes - 1 < 0 ? 0 : book.votes - 1});
-      } else {
-        return item;
-      }
-    });
-
-    this.setState({books});
+    if (incr) {
+      service.upvote(book._id)
+        .then(() => {
+          let books = this.state.books.map(item => {
+            if (item._id === book._id) {
+              return Object.assign({}, book, {votes: incr ? book.votes + 1 : book.votes - 1 < 0 ? 0 : book.votes - 1});
+            } else {
+              return item;
+            }
+          });
+      
+          this.setState({books});
+        })
+    }
+    
   }
 
   addBook () {
@@ -51,10 +61,23 @@ class App extends Component {
     this.setState({newTitle: value});
   }
 
+  showLogin () {
+    this.setState({showLogin: !this.state.showLogin, showSignup: false});
+  }
+
+  showSignup () {
+    this.setState({showSignup: !this.state.showSignup, showLogin: false});
+  }
+
+  togglePanel () {
+    this.setState({showLogin: !this.state.showLogin, showSignup: !this.state.showSignup});
+  }
+
   render() {
       return (
         <div className="App">
-          <Nav />
+          <Nav login={this.showLogin} signup={this.showSignup}/>
+          {this.state.showLogin || this.state.showSignup ? <Login signup={this.state.showSignup} togglePanel={this.togglePanel}/> : ''}
           <div style={{marginTop: 120}}>
           {this.state.books.map(book => <Card {...book} 
                                               upvote={() => this.changeVotes(book, true)}

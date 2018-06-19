@@ -20,6 +20,20 @@ app.post('/book', (req, res) => {
     }
 });
 
+app.post('/upvote/:id', (req, res) => {
+    let id = req.params.id;
+    database.voteBook(id, true,
+        err => console.err(err),
+        updatedBook => res.send(updatedBook));
+});
+
+app.post('downvote/:id', (req, res) => {
+    let id = req.params.id;
+    database.voteBook(id, false,
+        err => console.err(err),
+        updatedBook => res.send(updatedBook));
+});
+
 app.get('/*', (req, res) => {
     database.getBooks(
         err => console.err(err),

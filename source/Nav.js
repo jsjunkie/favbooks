@@ -1,6 +1,16 @@
 import React, { Component } from 'react';
 
 export default class Nav extends Component {
+    login (e) {
+        e.preventDefault();
+        this.props.login();
+    }
+
+    signup (e) {
+        e.preventDefault();
+        this.props.signup();
+    }
+
     render () {
         return (
             <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
@@ -15,10 +25,10 @@ export default class Nav extends Component {
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav mr-auto">
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Login</a>
+                            <a class="nav-link" href="Javascript:void(0);" onClick={(e) => this.login(e)}>Login</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link btn-primary" style={{color: 'white'}} href="#">Sign up</a>
+                            <a class="nav-link btn-primary" style={{color: 'white'}} href="Javascript:void(0);" onClick = {(e) => this.signup(e)}>Sign up</a>
                         </li>
                     </ul>     
                 </div>
