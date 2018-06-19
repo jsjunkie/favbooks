@@ -31,7 +31,20 @@ class App extends Component {
         .then(() => {
           let books = this.state.books.map(item => {
             if (item._id === book._id) {
-              return Object.assign({}, book, {votes: incr ? book.votes + 1 : book.votes - 1 < 0 ? 0 : book.votes - 1});
+              return Object.assign({}, book, {votes: book.votes + 1});
+            } else {
+              return item;
+            }
+          });
+      
+          this.setState({books});
+        })
+    } else {
+      service.downvote(book._id)
+        .then(() => {
+          let books = this.state.books.map(item => {
+            if (item._id === book._id) {
+              return Object.assign({}, book, {votes: book.votes - 1 < 0 ? 0 : book.votes - 1});
             } else {
               return item;
             }
