@@ -59,6 +59,9 @@ var serverConfig = {
                 
             }
         ]
+    },
+    optimization: {
+        minimize: false
     }
 }
 
