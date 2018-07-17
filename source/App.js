@@ -92,8 +92,7 @@ class App extends Component {
         <div className="App">
           <Nav login={this.showLogin} signup={this.showSignup}/>
           {this.state.showLogin || this.state.showSignup ? <Login signup={this.state.showSignup} togglePanel={this.togglePanel}/> : ''}
-          <Search />
-          <div style={{marginTop: 60}}>
+          <div style={{marginTop: 100}}>
           {this.state.books.map(book => <Card {...book} 
                                               upvote={() => this.changeVotes(book, true)}
                                               downvote={() => this.changeVotes(book, false)}/>)}
