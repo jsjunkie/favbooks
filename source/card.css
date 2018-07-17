@@ -13,7 +13,9 @@
 
 .card-title {
 	font-size: 25px;
-	font-family: Georgia, 'Times New Roman', Times, sans-serif
+	font-family: Georgia, 'Times New Roman', Times, sans-serif;
+	max-height: 93px;
+	overflow: hidden;
 }
 
 .card-button {

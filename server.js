@@ -94832,7 +94832,7 @@ exports = module.exports = __webpack_require__(86)(false);
 
 
 // module
-exports.push([module.i, ".card {\n\twidth: 240px;\n\theight: 285px;\n\tdisplay: inline-block;\n\tborder: 1px solid gray;\n\tmargin: 10px;\n\tpadding: 10px;\n\tborder-radius: 4px;\n\tbox-shadow: 2px 2px 2px gray;\n\tposition: relative;\n\toverflow: hidden;\n}\n\n.card-title {\n\tfont-size: 25px;\n\tfont-family: Georgia, 'Times New Roman', Times, sans-serif\n}\n\n.card-button {\n\tmargin: 10px;\n}\n\n.button-left {\n\tleft: 20px;\n}\n\n.button-right {\n\tright: 20px;\n}\n\n.card-button:hover {\n\tbackground-color: orange;\n\tcolor: blue;\n}\n\n.card-button:focus {\n\toutline: none;\n}\n\n.card-votes {\n\tborder: 1px solid #dedede;\n\theight: 50px;\n\twidth: 40px;\n\tmargin: 5px auto;\n\tborder-radius: 4px;\n\tbackground-color: orange;\n\tcolor: blue;\n\tfont-size: 30px;\n}\n", ""]);
+exports.push([module.i, ".card {\n\twidth: 240px;\n\theight: 285px;\n\tdisplay: inline-block;\n\tborder: 1px solid gray;\n\tmargin: 10px;\n\tpadding: 10px;\n\tborder-radius: 4px;\n\tbox-shadow: 2px 2px 2px gray;\n\tposition: relative;\n\toverflow: hidden;\n}\n\n.card-title {\n\tfont-size: 25px;\n\tfont-family: Georgia, 'Times New Roman', Times, sans-serif;\n\tmax-height: 93px;\n\toverflow: hidden;\n}\n\n.card-button {\n\tmargin: 10px;\n}\n\n.button-left {\n\tleft: 20px;\n}\n\n.button-right {\n\tright: 20px;\n}\n\n.card-button:hover {\n\tbackground-color: orange;\n\tcolor: blue;\n}\n\n.card-button:focus {\n\toutline: none;\n}\n\n.card-votes {\n\tborder: 1px solid #dedede;\n\theight: 50px;\n\twidth: 40px;\n\tmargin: 5px auto;\n\tborder-radius: 4px;\n\tbackground-color: orange;\n\tcolor: blue;\n\tfont-size: 30px;\n}\n", ""]);
 
 // exports
 
