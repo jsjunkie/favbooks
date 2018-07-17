@@ -27,14 +27,21 @@ app.get('/upvote/:id', (req, res) => {
         updatedBook => res.send(updatedBook));
 });
 
-app.get('downvote/:id', (req, res) => {
+app.get('/downvote/:id', (req, res) => {
     let id = req.params.id;
     database.voteBook(id, false,
         err => console.err(err),
         updatedBook => res.send(updatedBook));
 });
 
-app.get('/*', (req, res) => {
+app.get('/search/:str', (req, res) => {
+    var str = req.params.str;
+    database.search(str,
+        err => console.err(err),
+        books => res.send(books));
+})
+
+app.get('/', (req, res) => {
     database.getBooks(
         err => console.err(err),
         books => {

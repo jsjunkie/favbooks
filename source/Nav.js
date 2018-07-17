@@ -16,7 +16,7 @@ export default class Nav extends Component {
         return (
             <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
                 <a class="navbar-brand col-2" href="#">FavBooks</a>
-                <div class="col-6"><Search/></div>
+                <div class="col-6"><Search search={this.props.search} searchStr={this.props.searchStr} searchInput={value => this.props.searchInput(value)}/></div>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>

@@ -50465,18 +50465,30 @@ var Search = function (_Component) {
     }
 
     _createClass(Search, [{
+        key: 'search',
+        value: function search(e) {
+            e.preventDefault();
+            this.props.search();
+        }
+    }, {
         key: 'render',
         value: function render() {
+            var _this2 = this;
+
             return _react2.default.createElement(
                 'div',
                 { className: 'Search' },
                 _react2.default.createElement(
                     'form',
                     { 'class': 'form-inline justify-content-center SearchForm' },
-                    _react2.default.createElement('input', { 'class': 'form-control mr-2 SearchInput', type: 'search', placeholder: 'Find your favorite book..', 'aria-label': 'Search' }),
+                    _react2.default.createElement('input', { 'class': 'form-control mr-2 SearchInput', type: 'search', placeholder: 'Find your favorite book..', 'aria-label': 'Search', value: this.props.searchStr, onChange: function onChange(e) {
+                            return _this2.props.searchInput(e.target.value);
+                        } }),
                     _react2.default.createElement(
                         'button',
-                        { 'class': 'btn btn-outline-success', type: 'submit' },
+                        { 'class': 'btn btn-outline-success', onClick: function onClick(e) {
+                                return _this2.search(e);
+                            } },
                         _react2.default.createElement('i', { 'class': 'fa fa-search SearchIcon' })
                     )
                 )
@@ -54960,6 +54972,8 @@ var bookSchema = _mongoose2.default.Schema({
     votes: Number
 });
 
+bookSchema.index({ title: 'text' });
+
 var Book = _mongoose2.default.model('Book', bookSchema);
 var getBooks = function getBooks(errorCallback, callback) {
     Book.find({}, null, { sort: { votes: -1, _id: -1 } }, function (err, books) {
@@ -55005,10 +55019,22 @@ var voteBook = function voteBook(id, upvote, errorCallback, callback) {
     });
 };
 
+var search = function search(str, errorCallback, callback) {
+    Book.find({ $text: { $search: str } }, null, { sort: { votes: -1, _id: -1 } }, function (err, books) {
+        if (err) {
+            errorCallback(err);
+            return;
+        }
+
+        callback(books);
+    });
+};
+
 var database = exports.database = {
     getBooks: getBooks,
     addBook: addBook,
-    voteBook: voteBook
+    voteBook: voteBook,
+    search: search
 };
 
 /***/ }),
@@ -94448,13 +94474,18 @@ var upvote = function upvote(id) {
 };
 
 var downvote = function downvote(id) {
-    return fetch('downvote/' + id);
+    return fetch('/downvote/' + id);
+};
+
+var search = function search(str) {
+    return fetch('/search/' + str);
 };
 
 var service = exports.service = {
     addBook: addBook,
     upvote: upvote,
-    downvote: downvote
+    downvote: downvote,
+    search: search
 };
 
 /***/ }),
@@ -94629,7 +94660,9 @@ var Nav = function (_Component) {
                 _react2.default.createElement(
                     'div',
                     { 'class': 'col-6' },
-                    _react2.default.createElement(_Search2.default, null)
+                    _react2.default.createElement(_Search2.default, { search: this.props.search, searchStr: this.props.searchStr, searchInput: function searchInput(value) {
+                            return _this2.props.searchInput(value);
+                        } })
                 ),
                 _react2.default.createElement(
                     'button',
@@ -95008,12 +95041,14 @@ var App = function (_Component) {
       delete window._initialData;
     }
 
-    _this.state = { books: books, newTitle: '', showLogin: false, showSignup: false };
+    _this.state = { books: books, newTitle: '', showLogin: false, showSignup: false, searchStr: '' };
 
     _this.addBook = _this.addBook.bind(_this);
     _this.showLogin = _this.showLogin.bind(_this);
     _this.showSignup = _this.showSignup.bind(_this);
     _this.togglePanel = _this.togglePanel.bind(_this);
+    _this.search = _this.search.bind(_this);
+    _this.seachInput = _this.searchInput.bind(_this);
     return _this;
   }
 
@@ -95087,14 +95122,36 @@ var App = function (_Component) {
       this.setState({ showLogin: !this.state.showLogin, showSignup: !this.state.showSignup });
     }
   }, {
+    key: 'search',
+    value: function search() {
+      var _this4 = this;
+
+      console.log('searched', this.state.searchStr);
+      _service.service.search(this.state.searchStr).then(function (data) {
+        console.log(data);
+        return data.json();
+      }).then(function (books) {
+        return _this4.setState({ books: books });
+      }).catch(function (err) {
+        return console.log(err);
+      });
+    }
+  }, {
+    key: 'searchInput',
+    value: function searchInput(value) {
+      this.setState({ searchStr: value });
+    }
+  }, {
     key: 'render',
     value: function render() {
-      var _this4 = this;
+      var _this5 = this;
 
       return _react2.default.createElement(
         'div',
         { className: 'App' },
-        _react2.default.createElement(_Nav2.default, { login: this.showLogin, signup: this.showSignup }),
+        _react2.default.createElement(_Nav2.default, { login: this.showLogin, signup: this.showSignup, search: this.search, searchStr: this.state.searchStr, searchInput: function searchInput(value) {
+            return _this5.searchInput(value);
+          } }),
         this.state.showLogin || this.state.showSignup ? _react2.default.createElement(_Login2.default, { signup: this.state.showSignup, togglePanel: this.togglePanel }) : '',
         _react2.default.createElement(
           'div',
@@ -95102,10 +95159,10 @@ var App = function (_Component) {
           this.state.books.map(function (book) {
             return _react2.default.createElement(_Card2.default, _extends({}, book, {
               upvote: function upvote() {
-                return _this4.changeVotes(book, true);
+                return _this5.changeVotes(book, true);
               },
               downvote: function downvote() {
-                return _this4.changeVotes(book, false);
+                return _this5.changeVotes(book, false);
               } }));
           })
         ),
@@ -95115,7 +95172,7 @@ var App = function (_Component) {
           '+'
         ),
         _react2.default.createElement(_AddCard2.default, { title: this.state.newTitle, addBook: this.addBook, textChange: function textChange(value) {
-            return _this4.textChange(value);
+            return _this5.textChange(value);
           } })
       );
     }
@@ -112593,7 +112650,7 @@ app.get('/upvote/:id', function (req, res) {
     });
 });
 
-app.get('downvote/:id', function (req, res) {
+app.get('/downvote/:id', function (req, res) {
     var id = req.params.id;
     _database.database.voteBook(id, false, function (err) {
         return console.err(err);
@@ -112602,7 +112659,16 @@ app.get('downvote/:id', function (req, res) {
     });
 });
 
-app.get('/*', function (req, res) {
+app.get('/search/:str', function (req, res) {
+    var str = req.params.str;
+    _database.database.search(str, function (err) {
+        return console.err(err);
+    }, function (books) {
+        return res.send(books);
+    });
+});
+
+app.get('/', function (req, res) {
     _database.database.getBooks(function (err) {
         return console.err(err);
     }, function (books) {

@@ -15,11 +15,16 @@ let upvote = id => {
 }
 
 let downvote = id => {
-    return fetch('downvote/'+id);
+    return fetch('/downvote/'+id);
+}
+
+let search = str => {
+    return fetch('/search/'+str);
 }
 
 export const service = {
     addBook: addBook,
     upvote: upvote,
-    downvote: downvote
+    downvote: downvote,
+    search: search
 }

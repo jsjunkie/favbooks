@@ -5,6 +5,8 @@ let bookSchema = mongoose.Schema({
     votes: Number
 });
 
+bookSchema.index({title: 'text'});
+
 let Book = mongoose.model('Book', bookSchema);
 let getBooks = (errorCallback, callback) => {
         Book.find({}, null, { sort: { votes: -1, _id : - 1} }, (err, books) => {
@@ -50,8 +52,20 @@ let voteBook = (id, upvote, errorCallback, callback) => {
     })
 };
 
+let search = (str, errorCallback, callback) => {
+    Book.find({$text: {$search: str}}, null, { sort: { votes: -1, _id : - 1} }, (err, books) => {
+        if (err) {
+            errorCallback(err);
+            return;
+        }
+
+        callback(books);
+    });
+}
+
 export const database = {
     getBooks: getBooks,
     addBook: addBook,
-    voteBook: voteBook
+    voteBook: voteBook,
+    search: search
 }

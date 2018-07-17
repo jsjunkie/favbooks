@@ -18,12 +18,14 @@ class App extends Component {
       delete window._initialData;
     }
 
-    this.state = { books: books, newTitle: '', showLogin: false, showSignup: false };
+    this.state = { books: books, newTitle: '', showLogin: false, showSignup: false, searchStr: '' };
 
     this.addBook = this.addBook.bind(this);
     this.showLogin = this.showLogin.bind(this);
     this.showSignup = this.showSignup.bind(this);
     this.togglePanel = this.togglePanel.bind(this);
+    this.search = this.search.bind(this);
+    this.seachInput = this.searchInput.bind(this);
   }
 
   changeVotes (book, incr) {
@@ -87,10 +89,25 @@ class App extends Component {
     this.setState({showLogin: !this.state.showLogin, showSignup: !this.state.showSignup});
   }
 
+  search () {
+    console.log('searched', this.state.searchStr);
+    service.search(this.state.searchStr)
+      .then(data => {
+        console.log(data);
+        return data.json()
+      })
+      .then(books => this.setState({books}))
+      .catch(err => console.log(err));
+  }
+
+  searchInput (value) {
+    this.setState({searchStr: value});
+  }
+
   render() {
       return (
         <div className="App">
-          <Nav login={this.showLogin} signup={this.showSignup}/>
+          <Nav login={this.showLogin} signup={this.showSignup} search={this.search} searchStr={this.state.searchStr} searchInput={value => this.searchInput(value)}/>
           {this.state.showLogin || this.state.showSignup ? <Login signup={this.state.showSignup} togglePanel={this.togglePanel}/> : ''}
           <div style={{marginTop: 100}}>
           {this.state.books.map(book => <Card {...book} 
