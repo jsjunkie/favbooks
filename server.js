@@ -94478,7 +94478,7 @@ var downvote = function downvote(id) {
 };
 
 var search = function search(str) {
-    return fetch('/search/' + str);
+    return str.trim() !== '' ? fetch('/search/' + str) : fetch('/books');
 };
 
 var service = exports.service = {
@@ -112662,6 +112662,14 @@ app.get('/downvote/:id', function (req, res) {
 app.get('/search/:str', function (req, res) {
     var str = req.params.str;
     _database.database.search(str, function (err) {
+        return console.err(err);
+    }, function (books) {
+        return res.send(books);
+    });
+});
+
+app.get('/books', function (req, res) {
+    _database.database.getBooks(function (err) {
         return console.err(err);
     }, function (books) {
         return res.send(books);

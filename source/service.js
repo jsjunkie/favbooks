@@ -19,7 +19,7 @@ let downvote = id => {
 }
 
 let search = str => {
-    return fetch('/search/'+str);
+    return (str.trim() !== '' ? fetch('/search/'+str) : fetch('/books'));
 }
 
 export const service = {

@@ -41,6 +41,12 @@ app.get('/search/:str', (req, res) => {
         books => res.send(books));
 })
 
+app.get('/books', (req, res) => {
+    database.getBooks(
+        err => console.err(err),
+        books => res.send(books));
+})
+
 app.get('/', (req, res) => {
     database.getBooks(
         err => console.err(err),
