@@ -26,6 +26,7 @@ class App extends Component {
     this.togglePanel = this.togglePanel.bind(this);
     this.search = this.search.bind(this);
     this.seachInput = this.searchInput.bind(this);
+    this.hideLogin = this.hideLogin.bind(this);
   }
 
   changeVotes (book, incr) {
@@ -104,9 +105,13 @@ class App extends Component {
     this.setState({searchStr: value});
   }
 
+  hideLogin (e) {debugger;
+    this.setState({showLogin: false, showSignup: false});
+  }
+
   render() {
       return (
-        <div className="App">
+        <div className="App" onClick={this.hideLogin}>
           <Nav login={this.showLogin} signup={this.showSignup} search={this.search} searchStr={this.state.searchStr} searchInput={value => this.searchInput(value)}/>
           {this.state.showLogin || this.state.showSignup ? <Login signup={this.state.showSignup} togglePanel={this.togglePanel}/> : ''}
           <div style={{marginTop: 100}}>

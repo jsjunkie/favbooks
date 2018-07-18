@@ -94529,7 +94529,9 @@ var Login = function (_Component) {
 
             return _react2.default.createElement(
                 'form',
-                { style: { position: 'fixed', zIndex: 100, top: 58, right: 105, padding: 10, background: 'white', boxShadow: '0 0 15px 1px rgba(0,0,0,.4)', minWidth: 280 } },
+                { onClick: function onClick(e) {
+                        return e.stopPropagation();
+                    }, style: { position: 'fixed', zIndex: 100, top: 58, right: 105, padding: 10, background: 'white', boxShadow: '0 0 15px 1px rgba(0,0,0,.4)', minWidth: 280 } },
                 _react2.default.createElement(
                     'div',
                     { style: { padding: 10 } },
@@ -94636,12 +94638,14 @@ var Nav = function (_Component) {
         key: 'login',
         value: function login(e) {
             e.preventDefault();
+            e.stopPropagation();
             this.props.login();
         }
     }, {
         key: 'signup',
         value: function signup(e) {
             e.preventDefault();
+            e.stopPropagation();
             this.props.signup();
         }
     }, {
@@ -94969,7 +94973,7 @@ exports = module.exports = __webpack_require__(86)(false);
 
 
 // module
-exports.push([module.i, ".App {\n  text-align: center;\n  padding: 10px;\n  max-width: 90%;\n  margin: 0 auto;\n}\n\n.AppTitle {\n  font-size: 55px;\n  font-family: helvetica sans-serif;\n}\n\n.AddButton {\n  border-radius: 50%;\n  background: red;\n  color: white;\n  width: 50px;\n  height: 50px;\n  position: fixed;\n  bottom: 40px;\n  right: 50px;\n  font-size: 37px;\n  cursor: pointer;\n  line-height: 1.25;\n}\n\n.AddButton:hover {\n  box-shadow: 2px 2px 2px gray;\n}\n\n.ShowAddCard {\n  width: 100%;\n  height: 100%;\n  position: fixed;\n  background: rgba(0, 0, 0, 0.6);\n  top: 0;\n  left: 0;\n}", ""]);
+exports.push([module.i, ".App {\n  text-align: center;\n  padding: 10px;\n  max-width: 100%;\n  margin: 0 auto;\n}\n\n.AppTitle {\n  font-size: 55px;\n  font-family: helvetica sans-serif;\n}\n\n.AddButton {\n  border-radius: 50%;\n  background: red;\n  color: white;\n  width: 50px;\n  height: 50px;\n  position: fixed;\n  bottom: 40px;\n  right: 50px;\n  font-size: 37px;\n  cursor: pointer;\n  line-height: 1.25;\n}\n\n.AddButton:hover {\n  box-shadow: 2px 2px 2px gray;\n}\n\n.ShowAddCard {\n  width: 100%;\n  height: 100%;\n  position: fixed;\n  background: rgba(0, 0, 0, 0.6);\n  top: 0;\n  left: 0;\n}", ""]);
 
 // exports
 
@@ -95049,6 +95053,7 @@ var App = function (_Component) {
     _this.togglePanel = _this.togglePanel.bind(_this);
     _this.search = _this.search.bind(_this);
     _this.seachInput = _this.searchInput.bind(_this);
+    _this.hideLogin = _this.hideLogin.bind(_this);
     return _this;
   }
 
@@ -95142,13 +95147,19 @@ var App = function (_Component) {
       this.setState({ searchStr: value });
     }
   }, {
+    key: 'hideLogin',
+    value: function hideLogin(e) {
+      debugger;
+      this.setState({ showLogin: false, showSignup: false });
+    }
+  }, {
     key: 'render',
     value: function render() {
       var _this5 = this;
 
       return _react2.default.createElement(
         'div',
-        { className: 'App' },
+        { className: 'App', onClick: this.hideLogin },
         _react2.default.createElement(_Nav2.default, { login: this.showLogin, signup: this.showSignup, search: this.search, searchStr: this.state.searchStr, searchInput: function searchInput(value) {
             return _this5.searchInput(value);
           } }),

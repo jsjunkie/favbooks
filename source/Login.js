@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 export default class Login extends Component {
     render () {
         return (
-            <form style={{position: 'fixed', zIndex: 100, top: 58, right: 105, padding: 10, background: 'white', boxShadow: '0 0 15px 1px rgba(0,0,0,.4)', minWidth: 280}}>
+            <form onClick={e => e.stopPropagation()} style={{position: 'fixed', zIndex: 100, top: 58, right: 105, padding: 10, background: 'white', boxShadow: '0 0 15px 1px rgba(0,0,0,.4)', minWidth: 280}}>
                 <div style={{padding: 10}}>{this.props.signup ? 'Sign up for FavBooks' : 'Login to FavBooks'}</div>
                 <div class="form-group">
                     <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email" />

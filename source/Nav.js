@@ -4,11 +4,13 @@ import Search from './Search.js';
 export default class Nav extends Component {
     login (e) {
         e.preventDefault();
+        e.stopPropagation();
         this.props.login();
     }
 
     signup (e) {
         e.preventDefault();
+        e.stopPropagation();
         this.props.signup();
     }
 
