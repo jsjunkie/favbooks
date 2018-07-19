@@ -99464,11 +99464,22 @@ var search = function search(str) {
     return str.trim() !== '' ? fetch('/search/' + str) : fetch('/books');
 };
 
+var login = function login(user) {
+    return fetch('/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(user)
+    });
+};
+
 var service = exports.service = {
     addBook: addBook,
     upvote: upvote,
     downvote: downvote,
-    search: search
+    search: search,
+    login: login
 };
 
 /***/ }),
@@ -99506,6 +99517,16 @@ var Login = function (_Component) {
     }
 
     _createClass(Login, [{
+        key: 'login',
+        value: function login(e) {
+            e.preventDefault();
+            if (this.props.signup) {
+                this.props.doSignup();
+            } else {
+                this.props.doLogin();
+            }
+        }
+    }, {
         key: 'render',
         value: function render() {
             var _this2 = this;
@@ -99523,7 +99544,9 @@ var Login = function (_Component) {
                 _react2.default.createElement(
                     'div',
                     { 'class': 'form-group' },
-                    _react2.default.createElement('input', { type: 'email', 'class': 'form-control', 'aria-describedby': 'emailHelp', placeholder: 'Enter email' }),
+                    _react2.default.createElement('input', { type: 'email', 'class': 'form-control', 'aria-describedby': 'emailHelp', placeholder: 'Enter email', value: this.props.email, onChange: function onChange(e) {
+                            return _this2.props.changeEmail(e.target.value);
+                        } }),
                     this.props.signup ? _react2.default.createElement(
                         'small',
                         { id: 'emailHelp', 'class': 'form-text text-muted' },
@@ -99533,16 +99556,22 @@ var Login = function (_Component) {
                 _react2.default.createElement(
                     'div',
                     { 'class': 'form-group' },
-                    _react2.default.createElement('input', { type: 'password', 'class': 'form-control', placeholder: 'Enter Password' })
+                    _react2.default.createElement('input', { type: 'password', 'class': 'form-control', placeholder: 'Enter Password', value: this.props.password, onChange: function onChange(e) {
+                            return _this2.props.changePassword(e.target.value);
+                        } })
                 ),
                 this.props.signup ? _react2.default.createElement(
                     'div',
                     { 'class': 'form-group' },
-                    _react2.default.createElement('input', { type: 'password', 'class': 'form-control', placeholder: 'Confirm Password' })
+                    _react2.default.createElement('input', { type: 'password', 'class': 'form-control', placeholder: 'Confirm Password', value: this.props.confirmPassword, onChange: function onChange(e) {
+                            return _this2.props.changeConfirmPassword(e.target.value);
+                        } })
                 ) : '',
                 _react2.default.createElement(
                     'button',
-                    { type: 'submit', 'class': 'btn btn-primary' },
+                    { type: 'submit', 'class': 'btn btn-primary', onClick: function onClick(e) {
+                            return _this2.login(e);
+                        } },
                     this.props.signup ? 'Sign Up' : 'Login'
                 ),
                 _react2.default.createElement(
@@ -100031,7 +100060,17 @@ var App = function (_Component) {
       delete window._initialData;
     }
 
-    _this.state = { books: books, newTitle: '', showLogin: false, showSignup: false, searchStr: '', newAuthor: '' };
+    _this.state = {
+      books: books,
+      newTitle: '',
+      showLogin: false,
+      showSignup: false,
+      searchStr: '',
+      newAuthor: '',
+      email: '',
+      password: '',
+      confirmPassword: ''
+    };
 
     _this.addBook = _this.addBook.bind(_this);
     _this.showLogin = _this.showLogin.bind(_this);
@@ -100041,6 +100080,11 @@ var App = function (_Component) {
     _this.seachInput = _this.searchInput.bind(_this);
     _this.hideLogin = _this.hideLogin.bind(_this);
     _this.authorTextChange = _this.authorTextChange.bind(_this);
+    _this.doLogin = _this.doLogin.bind(_this);
+    _this.doSignup = _this.doSignup.bind(_this);
+    _this.changeEmail = _this.changeEmail.bind(_this);
+    _this.changePassword = _this.changePassword.bind(_this);
+    _this.changeConfirmPassword = _this.changeConfirmPassword.bind(_this);
     return _this;
   }
 
@@ -100101,17 +100145,17 @@ var App = function (_Component) {
   }, {
     key: 'showLogin',
     value: function showLogin() {
-      this.setState({ showLogin: !this.state.showLogin, showSignup: false });
+      this.setState({ showLogin: !this.state.showLogin, showSignup: false, email: '', password: '', confirmPassword: '' });
     }
   }, {
     key: 'showSignup',
     value: function showSignup() {
-      this.setState({ showSignup: !this.state.showSignup, showLogin: false });
+      this.setState({ showSignup: !this.state.showSignup, showLogin: false, email: '', password: '', confirmPassword: '' });
     }
   }, {
     key: 'togglePanel',
     value: function togglePanel() {
-      this.setState({ showLogin: !this.state.showLogin, showSignup: !this.state.showSignup });
+      this.setState({ showLogin: !this.state.showLogin, showSignup: !this.state.showSignup, email: '', password: '', confirmPassword: '' });
     }
   }, {
     key: 'search',
@@ -100144,27 +100188,74 @@ var App = function (_Component) {
       this.setState({ newAuthor: newAuthor });
     }
   }, {
+    key: 'doLogin',
+    value: function doLogin() {
+      var _this5 = this;
+
+      if (this.state.email === '') {
+        alert('Please enter email');
+      } else if (this.state.password === '') {
+        alert('Please enter password');
+      } else {
+        _service.service.login({ email: this.state.email, password: this.state.password }).then(function (data) {
+          return data.json();
+        }).then(function (res) {
+          if (res.message === 'ok') {
+            localStorage.setItem('accesstoken', res.token);
+            _this5.setState({ showLogin: false });
+          } else {
+            alert('Error: ' + res.message);
+          }
+        }).catch(function (err) {
+          return console.log(err);
+        });
+      }
+    }
+  }, {
+    key: 'doSignup',
+    value: function doSignup() {
+      console.log('signup');
+    }
+  }, {
+    key: 'changeEmail',
+    value: function changeEmail(email) {
+      this.setState({ email: email });
+    }
+  }, {
+    key: 'changePassword',
+    value: function changePassword(password) {
+      this.setState({ password: password });
+    }
+  }, {
+    key: 'changeConfirmPassword',
+    value: function changeConfirmPassword(confirmPassword) {
+      this.setState({ confirmPassword: confirmPassword });
+    }
+  }, {
     key: 'render',
     value: function render() {
-      var _this5 = this;
+      var _this6 = this;
 
       return _react2.default.createElement(
         'div',
         { className: 'App', onClick: this.hideLogin },
         _react2.default.createElement(_Nav2.default, { login: this.showLogin, signup: this.showSignup, search: this.search, searchStr: this.state.searchStr, searchInput: function searchInput(value) {
-            return _this5.searchInput(value);
+            return _this6.searchInput(value);
           } }),
-        this.state.showLogin || this.state.showSignup ? _react2.default.createElement(_Login2.default, { signup: this.state.showSignup, togglePanel: this.togglePanel }) : '',
+        this.state.showLogin || this.state.showSignup ? _react2.default.createElement(_Login2.default, { signup: this.state.showSignup, togglePanel: this.togglePanel, doLogin: this.doLogin, doSignup: this.doSignup,
+          email: this.state.email, changeEmail: this.changeEmail,
+          password: this.state.password, changePassword: this.changePassword,
+          confirmPassword: this.state.confirmPassword, changeConfirmPassword: this.changeConfirmPassword }) : '',
         _react2.default.createElement(
           'div',
           { style: { marginTop: 100 } },
           this.state.books.map(function (book) {
             return _react2.default.createElement(_Card2.default, _extends({}, book, {
               upvote: function upvote() {
-                return _this5.changeVotes(book, true);
+                return _this6.changeVotes(book, true);
               },
               downvote: function downvote() {
-                return _this5.changeVotes(book, false);
+                return _this6.changeVotes(book, false);
               } }));
           })
         ),
@@ -100174,9 +100265,9 @@ var App = function (_Component) {
           '+'
         ),
         _react2.default.createElement(_AddCard2.default, { title: this.state.newTitle, addBook: this.addBook, textChange: function textChange(value) {
-            return _this5.textChange(value);
+            return _this6.textChange(value);
           }, author: this.state.newAuthor, authorTextChange: function authorTextChange(value) {
-            return _this5.authorTextChange(value);
+            return _this6.authorTextChange(value);
           } })
       );
     }
@@ -117685,6 +117776,7 @@ app.post("/login", function (req, res) {
     }, function (user) {
         if (!user) {
             res.status(401).json({ message: "no such user found" });
+            return;
         }
 
         if (user.password === req.body.password) {

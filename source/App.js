@@ -18,7 +18,17 @@ class App extends Component {
       delete window._initialData;
     }
 
-    this.state = { books: books, newTitle: '', showLogin: false, showSignup: false, searchStr: '', newAuthor: '' };
+    this.state = { 
+      books: books, 
+      newTitle: '', 
+      showLogin: false, 
+      showSignup: false, 
+      searchStr: '', 
+      newAuthor: '',
+      email: '',
+      password: '',
+      confirmPassword: ''
+    };
 
     this.addBook = this.addBook.bind(this);
     this.showLogin = this.showLogin.bind(this);
@@ -28,6 +38,11 @@ class App extends Component {
     this.seachInput = this.searchInput.bind(this);
     this.hideLogin = this.hideLogin.bind(this);
     this.authorTextChange = this.authorTextChange.bind(this);
+    this.doLogin = this.doLogin.bind(this);
+    this.doSignup = this.doSignup.bind(this);
+    this.changeEmail = this.changeEmail.bind(this);
+    this.changePassword = this.changePassword.bind(this);
+    this.changeConfirmPassword = this.changeConfirmPassword.bind(this);
   }
 
   changeVotes (book, incr) {
@@ -80,15 +95,15 @@ class App extends Component {
   }
 
   showLogin () {
-    this.setState({showLogin: !this.state.showLogin, showSignup: false});
+    this.setState({showLogin: !this.state.showLogin, showSignup: false, email: '', password: '', confirmPassword: ''});
   }
 
   showSignup () {
-    this.setState({showSignup: !this.state.showSignup, showLogin: false});
+    this.setState({showSignup: !this.state.showSignup, showLogin: false, email: '', password: '', confirmPassword: ''});
   }
 
   togglePanel () {
-    this.setState({showLogin: !this.state.showLogin, showSignup: !this.state.showSignup});
+    this.setState({showLogin: !this.state.showLogin, showSignup: !this.state.showSignup, email: '', password: '', confirmPassword: ''});
   }
 
   search () {
@@ -114,11 +129,50 @@ class App extends Component {
     this.setState({newAuthor})
   }
 
+  doLogin () {
+    if (this.state.email === '') {
+      alert('Please enter email');
+    } else if (this.state.password === '') {
+      alert('Please enter password');
+    } else {
+      service.login({email: this.state.email, password: this.state.password})
+        .then(data => data.json())
+        .then(res => {
+          if (res.message === 'ok') {
+            localStorage.setItem('accesstoken', res.token);
+            this.setState({showLogin: false});
+          } else {
+            alert('Error: '+ res.message);
+          }
+        })
+        .catch(err => console.log(err));
+    }
+  }
+
+  doSignup () {
+    console.log('signup');
+  }
+
+  changeEmail (email) {
+    this.setState({email});
+  }
+
+  changePassword (password) {
+    this.setState({password});
+  }
+
+  changeConfirmPassword (confirmPassword) {
+    this.setState({confirmPassword});
+  }
+
   render() {
       return (
         <div className="App" onClick={this.hideLogin}>
           <Nav login={this.showLogin} signup={this.showSignup} search={this.search} searchStr={this.state.searchStr} searchInput={value => this.searchInput(value)}/>
-          {this.state.showLogin || this.state.showSignup ? <Login signup={this.state.showSignup} togglePanel={this.togglePanel}/> : ''}
+          {this.state.showLogin || this.state.showSignup ? <Login signup={this.state.showSignup} togglePanel={this.togglePanel} doLogin={this.doLogin} doSignup={this.doSignup}
+            email={this.state.email} changeEmail={this.changeEmail}
+            password={this.state.password} changePassword={this.changePassword}
+            confirmPassword={this.state.confirmPassword} changeConfirmPassword={this.changeConfirmPassword}/> : ''}
           <div style={{marginTop: 100}}>
           {this.state.books.map(book => <Card {...book} 
                                               upvote={() => this.changeVotes(book, true)}

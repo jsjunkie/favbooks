@@ -22,9 +22,20 @@ let search = str => {
     return (str.trim() !== '' ? fetch('/search/'+str) : fetch('/books'));
 }
 
+let login = user => {
+    return fetch('/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(user)
+    })
+}
+
 export const service = {
     addBook: addBook,
     upvote: upvote,
     downvote: downvote,
-    search: search
+    search: search,
+    login: login
 }

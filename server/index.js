@@ -54,6 +54,7 @@ app.post("/login", function(req, res) {
         user => {
             if( !user ){
               res.status(401).json({message:"no such user found"});
+              return;
             }
             
             if(user.password === req.body.password) {
