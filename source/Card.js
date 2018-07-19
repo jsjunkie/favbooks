@@ -8,7 +8,7 @@ class Card extends Component {
 				<div class="card-body">
 					<div style={{height: 135}}>
 						<h5 class="card-title">{this.props.title}</h5>
-						<p class="card-text">By: Jon Doe</p>
+						<p class="card-text">By: {this.props.author}</p>
 					</div>
 					<div className="card-votes">{this.props.votes}</div>
 					<button class="btn btn-primary card-button" onClick={() => this.props.upvote()}>Upvote</button>

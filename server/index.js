@@ -15,8 +15,8 @@ app.use(bodyParser.json())
 app.use(express.static('client'));
 
 app.post('/book', (req, res) => {
-    if (req.body && req.body.title) {
-        database.addBook(req.body.title, err => console.log(err), book => res.send(book));
+    if (req.body && req.body.title && req.body.author) {
+        database.addBook(req.body.title, req.body.author, err => console.log(err), book => res.send(book));
     }
 });
 

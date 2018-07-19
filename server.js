@@ -54969,10 +54969,11 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var bookSchema = _mongoose2.default.Schema({
     title: String,
+    author: String,
     votes: Number
 });
 
-bookSchema.index({ title: 'text' });
+bookSchema.index({ title: 'text', author: 'text' });
 
 var Book = _mongoose2.default.model('Book', bookSchema);
 var getBooks = function getBooks(errorCallback, callback) {
@@ -54986,8 +54987,8 @@ var getBooks = function getBooks(errorCallback, callback) {
     });
 };
 
-var addBook = function addBook(title, errorCallback, callback) {
-    var newBook = new Book({ title: title, votes: 0 });
+var addBook = function addBook(title, author, errorCallback, callback) {
+    var newBook = new Book({ title: title, author: author, votes: 0 });
     newBook.save(function (err, book) {
         if (err) {
             errorCallback(err);
@@ -94540,7 +94541,7 @@ var Login = function (_Component) {
                 _react2.default.createElement(
                     'div',
                     { 'class': 'form-group' },
-                    _react2.default.createElement('input', { type: 'email', 'class': 'form-control', id: 'exampleInputEmail1', 'aria-describedby': 'emailHelp', placeholder: 'Enter email' }),
+                    _react2.default.createElement('input', { type: 'email', 'class': 'form-control', 'aria-describedby': 'emailHelp', placeholder: 'Enter email' }),
                     this.props.signup ? _react2.default.createElement(
                         'small',
                         { id: 'emailHelp', 'class': 'form-text text-muted' },
@@ -94550,12 +94551,12 @@ var Login = function (_Component) {
                 _react2.default.createElement(
                     'div',
                     { 'class': 'form-group' },
-                    _react2.default.createElement('input', { type: 'password', 'class': 'form-control', id: 'exampleInputPassword1', placeholder: 'Enter Password' })
+                    _react2.default.createElement('input', { type: 'password', 'class': 'form-control', placeholder: 'Enter Password' })
                 ),
                 this.props.signup ? _react2.default.createElement(
                     'div',
                     { 'class': 'form-group' },
-                    _react2.default.createElement('input', { type: 'password', 'class': 'form-control', id: 'exampleInputPassword1', placeholder: 'Confirm Password' })
+                    _react2.default.createElement('input', { type: 'password', 'class': 'form-control', placeholder: 'Confirm Password' })
                 ) : '',
                 _react2.default.createElement(
                     'button',
@@ -94834,7 +94835,9 @@ var AddCard = function (_Component) {
                                 _react2.default.createElement(
                                     'div',
                                     { 'class': 'form-group' },
-                                    _react2.default.createElement('input', { type: 'text', 'class': 'form-control', id: 'author', placeholder: 'Author..', value: 'Jon Doe' })
+                                    _react2.default.createElement('input', { type: 'text', 'class': 'form-control', id: 'author', placeholder: 'Author..', value: this.props.author, onChange: function onChange(e) {
+                                            return _this2.props.authorTextChange(e.target.value);
+                                        } })
                                 )
                             )
                         ),
@@ -94932,7 +94935,8 @@ var Card = function (_Component) {
 						_react2.default.createElement(
 							'p',
 							{ 'class': 'card-text' },
-							'By: Jon Doe'
+							'By: ',
+							this.props.author
 						)
 					),
 					_react2.default.createElement(
@@ -95045,7 +95049,7 @@ var App = function (_Component) {
       delete window._initialData;
     }
 
-    _this.state = { books: books, newTitle: '', showLogin: false, showSignup: false, searchStr: '' };
+    _this.state = { books: books, newTitle: '', showLogin: false, showSignup: false, searchStr: '', newAuthor: '' };
 
     _this.addBook = _this.addBook.bind(_this);
     _this.showLogin = _this.showLogin.bind(_this);
@@ -95054,6 +95058,7 @@ var App = function (_Component) {
     _this.search = _this.search.bind(_this);
     _this.seachInput = _this.searchInput.bind(_this);
     _this.hideLogin = _this.hideLogin.bind(_this);
+    _this.authorTextChange = _this.authorTextChange.bind(_this);
     return _this;
   }
 
@@ -95093,8 +95098,8 @@ var App = function (_Component) {
     value: function addBook() {
       var _this3 = this;
 
-      if (this.state.newTitle !== '') {
-        var newBook = { title: this.state.newTitle };
+      if (this.state.newTitle !== '' && this.state.newAuthor !== '') {
+        var newBook = { title: this.state.newTitle, author: this.state.newAuthor };
         _service.service.addBook(newBook).then(function (response) {
           return response.json();
         }).then(function (book) {
@@ -95149,8 +95154,12 @@ var App = function (_Component) {
   }, {
     key: 'hideLogin',
     value: function hideLogin(e) {
-      debugger;
       this.setState({ showLogin: false, showSignup: false });
+    }
+  }, {
+    key: 'authorTextChange',
+    value: function authorTextChange(newAuthor) {
+      this.setState({ newAuthor: newAuthor });
     }
   }, {
     key: 'render',
@@ -95184,6 +95193,8 @@ var App = function (_Component) {
         ),
         _react2.default.createElement(_AddCard2.default, { title: this.state.newTitle, addBook: this.addBook, textChange: function textChange(value) {
             return _this5.textChange(value);
+          }, author: this.state.newAuthor, authorTextChange: function authorTextChange(value) {
+            return _this5.authorTextChange(value);
           } })
       );
     }
@@ -112643,8 +112654,8 @@ app.use(_bodyParser2.default.json());
 app.use(_express2.default.static('client'));
 
 app.post('/book', function (req, res) {
-    if (req.body && req.body.title) {
-        _database.database.addBook(req.body.title, function (err) {
+    if (req.body && req.body.title && req.body.author) {
+        _database.database.addBook(req.body.title, req.body.author, function (err) {
             return console.log(err);
         }, function (book) {
             return res.send(book);

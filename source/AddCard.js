@@ -25,7 +25,7 @@ class AddCard extends Component{
                         <input type="text" class="form-control" id="book-title" placeholder="Book title.." value={this.props.title} onChange={(event) => this.props.textChange(event.target.value)} />
                         </div>
                         <div class="form-group">
-                        <input type="text" class="form-control" id="author" placeholder="Author.." value="Jon Doe" />
+                        <input type="text" class="form-control" id="author" placeholder="Author.." value={this.props.author} onChange={e => this.props.authorTextChange(e.target.value)}/>
                         </div>
                     </form>
                     </div>

@@ -18,7 +18,7 @@ class App extends Component {
       delete window._initialData;
     }
 
-    this.state = { books: books, newTitle: '', showLogin: false, showSignup: false, searchStr: '' };
+    this.state = { books: books, newTitle: '', showLogin: false, showSignup: false, searchStr: '', newAuthor: '' };
 
     this.addBook = this.addBook.bind(this);
     this.showLogin = this.showLogin.bind(this);
@@ -27,6 +27,7 @@ class App extends Component {
     this.search = this.search.bind(this);
     this.seachInput = this.searchInput.bind(this);
     this.hideLogin = this.hideLogin.bind(this);
+    this.authorTextChange = this.authorTextChange.bind(this);
   }
 
   changeVotes (book, incr) {
@@ -61,8 +62,8 @@ class App extends Component {
   }
 
   addBook () {
-    if (this.state.newTitle !== ''){
-      var newBook = { title: this.state.newTitle };
+    if (this.state.newTitle !== '' && this.state.newAuthor !== ''){
+      var newBook = { title: this.state.newTitle, author: this.state.newAuthor };
       service.addBook(newBook)
         .then(response => response.json())
         .then(book => {
@@ -105,8 +106,12 @@ class App extends Component {
     this.setState({searchStr: value});
   }
 
-  hideLogin (e) {debugger;
+  hideLogin (e) {
     this.setState({showLogin: false, showSignup: false});
+  }
+
+  authorTextChange (newAuthor) {
+    this.setState({newAuthor})
   }
 
   render() {
@@ -121,7 +126,7 @@ class App extends Component {
           </div>
           <span className="AddButton" data-toggle="modal" data-target="#addCard">+</span>
             
-          <AddCard title={this.state.newTitle} addBook={this.addBook} textChange={(value) => this.textChange(value)}/>
+          <AddCard title={this.state.newTitle} addBook={this.addBook} textChange={(value) => this.textChange(value)} author={this.state.newAuthor} authorTextChange={value => this.authorTextChange(value)}/>
         </div>
       );
     

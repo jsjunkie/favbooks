@@ -2,10 +2,11 @@ import mongoose from 'mongoose';
 
 let bookSchema = mongoose.Schema({
     title: String,
+    author: String,
     votes: Number
 });
 
-bookSchema.index({title: 'text'});
+bookSchema.index({title: 'text', author: 'text'});
 
 let Book = mongoose.model('Book', bookSchema);
 let getBooks = (errorCallback, callback) => {
@@ -19,8 +20,8 @@ let getBooks = (errorCallback, callback) => {
     })
 };
 
-let addBook = (title, errorCallback, callback) => {
-    var newBook = new Book({title: title, votes: 0});
+let addBook = (title, author, errorCallback, callback) => {
+    var newBook = new Book({title: title, author: author, votes: 0});
     newBook.save((err, book) => {
         if (err) {
             errorCallback(err);
