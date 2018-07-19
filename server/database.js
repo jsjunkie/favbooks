@@ -6,6 +6,12 @@ let bookSchema = mongoose.Schema({
     votes: Number
 });
 
+let userSchema = mongoose.Schema({
+    id: Number,
+    email: String,
+    password: String
+});
+
 bookSchema.index({title: 'text', author: 'text'});
 
 let Book = mongoose.model('Book', bookSchema);
@@ -64,9 +70,35 @@ let search = (str, errorCallback, callback) => {
     });
 }
 
+let User = mongoose.model('User', userSchema);
+
+let getUser = (id, errorCallback, callback) => {
+    User.findOne({id: id}, (error, user) => {
+        if (error) {
+            errorCallback(error);
+            return;
+        }
+
+        callback(user);
+    });
+}
+
+let getUserByEmail = (email, errorCallback, callback) => {
+    User.findOne({email: email}, (error, user) => {
+        if (error) {
+            errorCallback(error);
+            return;
+        }
+
+        callback(user);
+    });
+}
+
 export const database = {
     getBooks: getBooks,
     addBook: addBook,
     voteBook: voteBook,
-    search: search
+    search: search,
+    getUser: getUser,
+    getUserByEmail: getUserByEmail
 }

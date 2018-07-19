@@ -7,27 +7,79 @@ import { template } from './template.js';
 import mongoose from 'mongoose';
 import { database } from './database';
 
+//passport authentication
+import jwt from 'jsonwebtoken';
+import passport from 'passport';
+import passportJWT from 'passport-jwt';
+
+var ExtractJwt = passportJWT.ExtractJwt;
+var JwtStrategy = passportJWT.Strategy;
+
+var jwtOptions = {}
+jwtOptions.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
+jwtOptions.secretOrKey = 'bookmela';
+
+var strategy = new JwtStrategy(jwtOptions, function(jwt_payload, next) {
+  database.getUser(jwt_payload.id, 
+    err => console.log(err), 
+    user => {
+        if (user) {
+            next(null, user);
+        } else {
+            next(null, false);
+        }
+    });
+});
+
+passport.use(strategy);
+//passport authentication
+
 const app = express();
+
+app.use(passport.initialize());
 
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json())
 
 app.use(express.static('client'));
 
-app.post('/book', (req, res) => {
+app.post("/login", function(req, res) {
+    if(req.body.email && req.body.password){
+      var email = req.body.email;
+      var password = req.body.password;
+    }
+
+    database.getUserByEmail(email, 
+        err => console.err(err), 
+        user => {
+            if( !user ){
+              res.status(401).json({message:"no such user found"});
+            }
+            
+            if(user.password === req.body.password) {
+              var payload = {id: user.id};
+              var token = jwt.sign(payload, jwtOptions.secretOrKey);
+              res.json({message: "ok", token: token});
+            } else {
+              res.status(401).json({message:"passwords did not match"});
+            }
+        });    
+});
+
+app.post('/book', passport.authenticate('jwt', {session: false}), (req, res) => {
     if (req.body && req.body.title && req.body.author) {
         database.addBook(req.body.title, req.body.author, err => console.log(err), book => res.send(book));
     }
 });
 
-app.get('/upvote/:id', (req, res) => {
+app.get('/upvote/:id', passport.authenticate('jwt', {session: false}), (req, res) => {
     let id = req.params.id;
     database.voteBook(id, true,
         err => console.err(err),
         updatedBook => res.send(updatedBook));
 });
 
-app.get('/downvote/:id', (req, res) => {
+app.get('/downvote/:id', passport.authenticate('jwt', {session: false}), (req, res) => {
     let id = req.params.id;
     database.voteBook(id, false,
         err => console.err(err),
