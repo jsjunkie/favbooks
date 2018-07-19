@@ -60011,13 +60011,26 @@ var getUserByEmail = function getUserByEmail(email, errorCallback, callback) {
     });
 };
 
+var addUser = function addUser(email, password, errorCallback, callback) {
+    var newUser = new User({ email: email, password: password });
+    newUser.save(function (err, user) {
+        if (err) {
+            errorCallback(err);
+            return;
+        }
+
+        callback(user);
+    });
+};
+
 var database = exports.database = {
     getBooks: getBooks,
     addBook: addBook,
     voteBook: voteBook,
     search: search,
     getUser: getUser,
-    getUserByEmail: getUserByEmail
+    getUserByEmail: getUserByEmail,
+    addUser: addUser
 };
 
 /***/ }),
@@ -99474,12 +99487,23 @@ var login = function login(user) {
     });
 };
 
+var signup = function signup(user) {
+    return fetch('/signup', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(user)
+    });
+};
+
 var service = exports.service = {
     addBook: addBook,
     upvote: upvote,
     downvote: downvote,
     search: search,
-    login: login
+    login: login,
+    signup: signup
 };
 
 /***/ }),
@@ -100214,7 +100238,28 @@ var App = function (_Component) {
   }, {
     key: 'doSignup',
     value: function doSignup() {
-      console.log('signup');
+      var _this6 = this;
+
+      if (this.state.email === '') {
+        alert('Please enter email');
+      } else if (this.state.password === '') {
+        alert('Please enter password');
+      } else if (this.state.password !== this.state.confirmPassword) {
+        alert('Passwords don\'t match');
+      } else {
+        _service.service.signup({ email: this.state.email, password: this.state.password }).then(function (data) {
+          return data.json();
+        }).then(function (res) {
+          if (res.message === 'ok') {
+            localStorage.setItem('accesstoken', res.token);
+            _this6.setState({ showSignup: false });
+          } else {
+            alert('Error: ' + res.message);
+          }
+        }).catch(function (err) {
+          return console.log(err);
+        });
+      }
     }
   }, {
     key: 'changeEmail',
@@ -100234,13 +100279,13 @@ var App = function (_Component) {
   }, {
     key: 'render',
     value: function render() {
-      var _this6 = this;
+      var _this7 = this;
 
       return _react2.default.createElement(
         'div',
         { className: 'App', onClick: this.hideLogin },
         _react2.default.createElement(_Nav2.default, { login: this.showLogin, signup: this.showSignup, search: this.search, searchStr: this.state.searchStr, searchInput: function searchInput(value) {
-            return _this6.searchInput(value);
+            return _this7.searchInput(value);
           } }),
         this.state.showLogin || this.state.showSignup ? _react2.default.createElement(_Login2.default, { signup: this.state.showSignup, togglePanel: this.togglePanel, doLogin: this.doLogin, doSignup: this.doSignup,
           email: this.state.email, changeEmail: this.changeEmail,
@@ -100252,10 +100297,10 @@ var App = function (_Component) {
           this.state.books.map(function (book) {
             return _react2.default.createElement(_Card2.default, _extends({}, book, {
               upvote: function upvote() {
-                return _this6.changeVotes(book, true);
+                return _this7.changeVotes(book, true);
               },
               downvote: function downvote() {
-                return _this6.changeVotes(book, false);
+                return _this7.changeVotes(book, false);
               } }));
           })
         ),
@@ -100265,9 +100310,9 @@ var App = function (_Component) {
           '+'
         ),
         _react2.default.createElement(_AddCard2.default, { title: this.state.newTitle, addBook: this.addBook, textChange: function textChange(value) {
-            return _this6.textChange(value);
+            return _this7.textChange(value);
           }, author: this.state.newAuthor, authorTextChange: function authorTextChange(value) {
-            return _this6.authorTextChange(value);
+            return _this7.authorTextChange(value);
           } })
       );
     }
@@ -117769,6 +117814,8 @@ app.post("/login", function (req, res) {
     if (req.body.email && req.body.password) {
         var email = req.body.email;
         var password = req.body.password;
+    } else {
+        res.status(401).json({ message: 'invalid credentials' });
     }
 
     _database.database.getUserByEmail(email, function (err) {
@@ -117780,13 +117827,40 @@ app.post("/login", function (req, res) {
         }
 
         if (user.password === req.body.password) {
-            var payload = { id: user.id };
+            var payload = { id: user._id };
             var token = _jsonwebtoken2.default.sign(payload, jwtOptions.secretOrKey);
             res.json({ message: "ok", token: token });
         } else {
             res.status(401).json({ message: "passwords did not match" });
         }
     });
+});
+
+app.post("/signup", function (req, res) {
+    var _req$body = req.body,
+        email = _req$body.email,
+        password = _req$body.password;
+
+
+    if (email !== '' && password !== '') {
+        _database.database.getUserByEmail(email, function (err) {
+            return console.err(err);
+        }, function (user) {
+            if (!user) {
+                _database.database.addUser(email, password, function (err) {
+                    return console.log(err);
+                }, function (user) {
+                    var payload = { id: user._id };
+                    var token = _jsonwebtoken2.default.sign(payload, jwtOptions.secretOrKey);
+                    res.json({ message: "ok", token: token });
+                });
+            } else {
+                res.status(401).json({ message: 'User is already signed up' });
+            }
+        });
+    } else {
+        res.status(401).json({ message: 'invalid credentials' });
+    }
 });
 
 app.post('/book', _passport2.default.authenticate('jwt', { session: false }), function (req, res) {

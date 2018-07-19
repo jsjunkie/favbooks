@@ -32,10 +32,21 @@ let login = user => {
     })
 }
 
+let signup = user => {
+    return fetch('/signup', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(user)
+    })
+}
+
 export const service = {
     addBook: addBook,
     upvote: upvote,
     downvote: downvote,
     search: search,
-    login: login
+    login: login,
+    signup: signup
 }

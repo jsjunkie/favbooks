@@ -94,11 +94,24 @@ let getUserByEmail = (email, errorCallback, callback) => {
     });
 }
 
+let addUser = (email, password, errorCallback, callback) => {
+    let newUser = new User({email: email, password: password});
+    newUser.save((err, user) => {
+        if (err) {
+            errorCallback(err);
+            return;
+        }
+
+        callback(user);
+    });
+}
+
 export const database = {
     getBooks: getBooks,
     addBook: addBook,
     voteBook: voteBook,
     search: search,
     getUser: getUser,
-    getUserByEmail: getUserByEmail
+    getUserByEmail: getUserByEmail,
+    addUser: addUser
 }

@@ -150,7 +150,25 @@ class App extends Component {
   }
 
   doSignup () {
-    console.log('signup');
+    if (this.state.email === '') {
+      alert('Please enter email');
+    } else if (this.state.password === '') {
+      alert('Please enter password');
+    } else if (this.state.password !== this.state.confirmPassword) {
+      alert('Passwords don\'t match');
+    } else {
+      service.signup({email: this.state.email, password: this.state.password})
+        .then(data => data.json())
+        .then(res => {
+          if (res.message === 'ok') {
+            localStorage.setItem('accesstoken', res.token);
+            this.setState({showSignup: false});
+          } else {
+            alert('Error: '+ res.message);
+          }
+        })
+        .catch(err => console.log(err));
+    }
   }
 
   changeEmail (email) {

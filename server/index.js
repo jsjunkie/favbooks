@@ -43,10 +43,12 @@ app.use(bodyParser.json())
 
 app.use(express.static('client'));
 
-app.post("/login", function(req, res) {
+app.post("/login", (req, res) => {
     if(req.body.email && req.body.password){
       var email = req.body.email;
       var password = req.body.password;
+    } else {
+        res.status(401).json({message: 'invalid credentials'});
     }
 
     database.getUserByEmail(email, 
@@ -58,7 +60,7 @@ app.post("/login", function(req, res) {
             }
             
             if(user.password === req.body.password) {
-              var payload = {id: user.id};
+              var payload = {id: user._id};
               var token = jwt.sign(payload, jwtOptions.secretOrKey);
               res.json({message: "ok", token: token});
             } else {
@@ -66,6 +68,35 @@ app.post("/login", function(req, res) {
             }
         });    
 });
+
+app.post("/signup", (req, res) => {
+    let { email, password } = req.body;
+
+    if (email !== '' && password !== '') {
+        database.getUserByEmail(email,
+            err => console.err(err),
+            user => {
+                if (!user) {
+                    database.addUser(email, password,
+                        err => console.log(err),
+                        user => {
+                            var payload = {id: user._id};
+                            var token = jwt.sign(payload, jwtOptions.secretOrKey);
+                            res.json({message: "ok", token: token});
+                        }
+                    )
+                } else {
+                    res.status(401).json({message: 'User is already signed up'});
+                }
+            }
+        )
+        
+    } else {
+        res.status(401).json({message: 'invalid credentials'});
+    }
+
+    
+})
 
 app.post('/book', passport.authenticate('jwt', {session: false}), (req, res) => {
     if (req.body && req.body.title && req.body.author) {
