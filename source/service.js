@@ -51,11 +51,31 @@ let signup = user => {
     })
 }
 
+let logout = email => {
+    return fetch('/logout', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({email})
+    })
+}
+
+let validateLogin = () => {
+    return fetch('/validateLogin', {
+        headers: {
+            Authorization: 'Bearer ' + localStorage.getItem('accesstoken')
+        }
+    })
+}
+
 export const service = {
     addBook: addBook,
     upvote: upvote,
     downvote: downvote,
     search: search,
     login: login,
-    signup: signup
+    signup: signup,
+    logout: logout,
+    validateLogin: validateLogin
 }

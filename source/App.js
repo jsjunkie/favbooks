@@ -53,9 +53,26 @@ class App extends Component {
 
   componentDidMount () {
     let accesstoken = window.localStorage.getItem('accesstoken');
-    if (accesstoken !== null) {
-      let loggedInUser = this.getLoggedInUser(accesstoken);
-      this.setState({loggedInUser});
+    if (accesstoken === null) {
+      this.setState({loggedInUser: null});
+    } else {
+      service.validateLogin()
+        .then(res => {
+          if (res.status === 200) {
+            return res.json()
+          } else {
+            throw new Error('Unauthorized');
+          } 
+        })
+        .then(({message}) => {
+          let loggedInUser = message === 'ok' ? this.getLoggedInUser(accesstoken) : null;
+          this.setState({loggedInUser});
+          
+        })
+        .catch(err => {
+          this.setState({loggedInUser: null});
+        })
+      
     }
   }
 
@@ -74,7 +91,7 @@ class App extends Component {
         
             this.setState({books});
           } else {
-            this.setState({showLogin: true, email: '', password: '', confirmPassword: ''});
+            this.setState({showLogin: true, email: '', password: '', confirmPassword: '', loggedInUser: null});
           }
         })
     } else {
@@ -91,7 +108,7 @@ class App extends Component {
         
             this.setState({books});
           } else {
-            this.setState({showLogin: true, email: '', password: '', confirmPassword: ''});
+            this.setState({showLogin: true, email: '', password: '', confirmPassword: '', loggedInUser: null});
           } 
         })
     }
@@ -105,7 +122,7 @@ class App extends Component {
           if (response.status === 200) {
             return response.json();
           } else {
-            this.setState({showLogin: true, email: '', password: '', confirmPassword: ''});
+            this.setState({showLogin: true, email: '', password: '', confirmPassword: '', loggedInUser: null});
             throw new Error('Unauthorized');
           }
         })
@@ -214,8 +231,14 @@ class App extends Component {
   }
 
   logout () {
-    localStorage.removeItem('accesstoken');
-    this.setState({loggedInUser: null});
+    service.logout(this.state.loggedInUser)
+      .then(res => res.json())
+      .then(({message}) => {
+        if (message === 'ok') {
+          localStorage.removeItem('accesstoken');
+          this.setState({loggedInUser: null});
+        }
+      })
   }
 
   render() {

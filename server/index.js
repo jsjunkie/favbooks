@@ -11,6 +11,7 @@ import { database } from './database';
 import jwt from 'jsonwebtoken';
 import passport from 'passport';
 import passportJWT from 'passport-jwt';
+import atob from 'atob';
 
 var ExtractJwt = passportJWT.ExtractJwt;
 var JwtStrategy = passportJWT.Strategy;
@@ -20,7 +21,7 @@ jwtOptions.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
 jwtOptions.secretOrKey = 'bookmela';
 
 var strategy = new JwtStrategy(jwtOptions, function(jwt_payload, next) {
-  database.getUser(jwt_payload.id, 
+  database.getUser(jwt_payload.id, jwt_payload.iat,
     err => console.log(err), 
     user => {
         if (user) {
@@ -62,7 +63,12 @@ app.post("/login", (req, res) => {
             if(user.password === req.body.password) {
               var payload = {id: user._id, email: user.email};
               var token = jwt.sign(payload, jwtOptions.secretOrKey);
-              res.json({message: "ok", token: token});
+              let { iat } = JSON.parse(atob(token.split('.')[1]))
+              database.updateUserToken(email, iat, err => console.log(err),
+                user => {
+                    res.json({message: "ok", token: token});
+                }
+              )
             } else {
               res.status(401).json({message:"passwords did not match"});
             }
@@ -77,12 +83,17 @@ app.post("/signup", (req, res) => {
             err => console.err(err),
             user => {
                 if (!user) {
-                    database.addUser(email, password,
+                    database.addUser(email, password, null,
                         err => console.log(err),
                         user => {
                             var payload = {id: user._id, email: user.email};
                             var token = jwt.sign(payload, jwtOptions.secretOrKey);
-                            res.json({message: "ok", token: token});
+                            let { iat } = JSON.parse(atob(token.split('.')[1]))
+                            database.updateUserToken(email, iat, err => console.log(err),
+                                user => {
+                                    res.json({message: "ok", token: token});
+                                }
+                            )
                         }
                     )
                 } else {
@@ -96,6 +107,20 @@ app.post("/signup", (req, res) => {
     }
 
     
+})
+
+app.post('/logout', (req, res) => {
+    let email = req.body.email;
+    database.updateUserToken(email, null,
+        err => console.log(err),
+        user => {
+            res.json({message: 'ok'});
+        }
+    )
+})
+
+app.get('/validateLogin', passport.authenticate('jwt', {session: false}), (req, res) => {
+    res.json({message: 'ok'});
 })
 
 app.post('/book', passport.authenticate('jwt', {session: false}), (req, res) => {

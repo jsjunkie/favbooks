@@ -9,7 +9,8 @@ let bookSchema = mongoose.Schema({
 let userSchema = mongoose.Schema({
     id: Number,
     email: String,
-    password: String
+    password: String,
+    iat: Number
 });
 
 bookSchema.index({title: 'text', author: 'text'});
@@ -72,8 +73,8 @@ let search = (str, errorCallback, callback) => {
 
 let User = mongoose.model('User', userSchema);
 
-let getUser = (id, errorCallback, callback) => {
-    User.findOne({_id: mongoose.Types.ObjectId(id)}, (error, user) => {
+let getUser = (id, iat, errorCallback, callback) => {
+    User.findOne({_id: mongoose.Types.ObjectId(id), iat: iat}, (error, user) => {
         if (error) {
             errorCallback(error);
             return;
@@ -94,8 +95,8 @@ let getUserByEmail = (email, errorCallback, callback) => {
     });
 }
 
-let addUser = (email, password, errorCallback, callback) => {
-    let newUser = new User({email: email, password: password});
+let addUser = (email, password, iat, errorCallback, callback) => {
+    let newUser = new User({email: email, password: password, iat: iat});
     newUser.save((err, user) => {
         if (err) {
             errorCallback(err);
@@ -106,6 +107,26 @@ let addUser = (email, password, errorCallback, callback) => {
     });
 }
 
+let updateUserToken = (email, iat, errorCallback, callback) => {
+    User.findOne({email: email}, (error, user) => {
+        if (error) {
+            errorCallback(error);
+            return;
+        }
+
+        user.set({iat: iat});
+
+        user.save((err, updatedUser) => {
+            if (err) {
+                errorCallback(err);
+                return;
+            }
+
+            callback(updatedUser);
+        })
+    })
+}
+
 export const database = {
     getBooks: getBooks,
     addBook: addBook,
@@ -113,5 +134,6 @@ export const database = {
     search: search,
     getUser: getUser,
     getUserByEmail: getUserByEmail,
-    addUser: addUser
+    addUser: addUser,
+    updateUserToken: updateUserToken
 }
