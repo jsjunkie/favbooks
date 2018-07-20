@@ -28,7 +28,8 @@ class App extends Component {
       email: '',
       password: '',
       confirmPassword: '',
-      loggedInUser: null
+      loggedInUser: null,
+      showOptions: false
     };
 
     this.addBook = this.addBook.bind(this);
@@ -45,6 +46,7 @@ class App extends Component {
     this.changePassword = this.changePassword.bind(this);
     this.changeConfirmPassword = this.changeConfirmPassword.bind(this);
     this.logout = this.logout.bind(this);
+    this.toggleOptions = this.toggleOptions.bind(this);
   }
 
   getLoggedInUser (accesstoken) {
@@ -167,7 +169,7 @@ class App extends Component {
   }
 
   hideLogin (e) {
-    this.setState({showLogin: false, showSignup: false});
+    this.setState({showLogin: false, showSignup: false, showOptions: false});
   }
 
   authorTextChange (newAuthor) {
@@ -241,10 +243,14 @@ class App extends Component {
       })
   }
 
+  toggleOptions () {
+    this.setState({showOptions: !this.state.showOptions});
+  }
+ 
   render() {
       return (
         <div className="App" onClick={this.hideLogin}>
-          <Nav login={this.showLogin} signup={this.showSignup} search={this.search} searchStr={this.state.searchStr} searchInput={value => this.searchInput(value)} loggedInUser={this.state.loggedInUser} logout={this.logout}/>
+          <Nav login={this.showLogin} signup={this.showSignup} search={this.search} searchStr={this.state.searchStr} searchInput={value => this.searchInput(value)} loggedInUser={this.state.loggedInUser} logout={this.logout} showOptions={this.state.showOptions} toggleOptions={this.toggleOptions}/>
           {this.state.showLogin || this.state.showSignup ? <Login signup={this.state.showSignup} togglePanel={this.togglePanel} doLogin={this.doLogin} doSignup={this.doSignup}
             email={this.state.email} changeEmail={this.changeEmail}
             password={this.state.password} changePassword={this.changePassword}

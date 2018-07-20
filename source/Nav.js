@@ -2,14 +2,6 @@ import React, { Component } from 'react';
 import Search from './Search.js';
 
 export default class Nav extends Component {
-    constructor () {
-        super();
-
-        this.state = {
-            showOptions: false
-        }
-    }
-
     login (e) {
         e.preventDefault();
         e.stopPropagation();
@@ -26,6 +18,11 @@ export default class Nav extends Component {
         e.preventDefault();
         this.setState({showOptions: false});
         this.props.logout();
+    }
+
+    toggleOptions (e) {
+        e.stopPropagation();
+        this.props.toggleOptions();
     }
 
     render () {
@@ -47,8 +44,8 @@ export default class Nav extends Component {
                         {this.props.loggedInUser ?
                         <li class="nav-item ml-1 ml-xl-3" style={{position: 'relative'}}>
                             <span class="nav-link" href="Javascript:void(0);" style={{pointerEvents: 'none'}}>{this.props.loggedInUser}</span>
-                            <i class="fa fa-caret-down" style={{position: 'absolute', top: 10, right: -5, cursor: 'pointer'}} onClick={() => this.setState({showOptions: !this.state.showOptions})}></i>
-                            {this.state.showOptions ? 
+                            <i class="fa fa-caret-down" style={{position: 'absolute', top: 10, right: -5, cursor: 'pointer'}} onClick={e => this.toggleOptions(e)}></i>
+                            {this.props.showOptions ? 
                             <ul style={{position: 'absolute', top: 30, right: -5, width: 100, background: '#dedede', listStyle: 'none'}}>
                                 <li style={{padding: 5, cursor: 'pointer'}} onClick={e => this.logout(e)}>Logout</li>
                             </ul> : ''}

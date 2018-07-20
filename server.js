@@ -100834,12 +100834,7 @@ var Nav = function (_Component) {
     function Nav() {
         _classCallCheck(this, Nav);
 
-        var _this = _possibleConstructorReturn(this, (Nav.__proto__ || Object.getPrototypeOf(Nav)).call(this));
-
-        _this.state = {
-            showOptions: false
-        };
-        return _this;
+        return _possibleConstructorReturn(this, (Nav.__proto__ || Object.getPrototypeOf(Nav)).apply(this, arguments));
     }
 
     _createClass(Nav, [{
@@ -100862,6 +100857,12 @@ var Nav = function (_Component) {
             e.preventDefault();
             this.setState({ showOptions: false });
             this.props.logout();
+        }
+    }, {
+        key: 'toggleOptions',
+        value: function toggleOptions(e) {
+            e.stopPropagation();
+            this.props.toggleOptions();
         }
     }, {
         key: 'render',
@@ -100920,10 +100921,10 @@ var Nav = function (_Component) {
                                 { 'class': 'nav-link', href: 'Javascript:void(0);', style: { pointerEvents: 'none' } },
                                 this.props.loggedInUser
                             ),
-                            _react2.default.createElement('i', { 'class': 'fa fa-caret-down', style: { position: 'absolute', top: 10, right: -5, cursor: 'pointer' }, onClick: function onClick() {
-                                    return _this2.setState({ showOptions: !_this2.state.showOptions });
+                            _react2.default.createElement('i', { 'class': 'fa fa-caret-down', style: { position: 'absolute', top: 10, right: -5, cursor: 'pointer' }, onClick: function onClick(e) {
+                                    return _this2.toggleOptions(e);
                                 } }),
-                            this.state.showOptions ? _react2.default.createElement(
+                            this.props.showOptions ? _react2.default.createElement(
                                 'ul',
                                 { style: { position: 'absolute', top: 30, right: -5, width: 100, background: '#dedede', listStyle: 'none' } },
                                 _react2.default.createElement(
@@ -101296,7 +101297,8 @@ var App = function (_Component) {
       email: '',
       password: '',
       confirmPassword: '',
-      loggedInUser: null
+      loggedInUser: null,
+      showOptions: false
     };
 
     _this.addBook = _this.addBook.bind(_this);
@@ -101313,6 +101315,7 @@ var App = function (_Component) {
     _this.changePassword = _this.changePassword.bind(_this);
     _this.changeConfirmPassword = _this.changeConfirmPassword.bind(_this);
     _this.logout = _this.logout.bind(_this);
+    _this.toggleOptions = _this.toggleOptions.bind(_this);
     return _this;
   }
 
@@ -101451,7 +101454,7 @@ var App = function (_Component) {
   }, {
     key: 'hideLogin',
     value: function hideLogin(e) {
-      this.setState({ showLogin: false, showSignup: false });
+      this.setState({ showLogin: false, showSignup: false, showOptions: false });
     }
   }, {
     key: 'authorTextChange',
@@ -101542,6 +101545,11 @@ var App = function (_Component) {
       });
     }
   }, {
+    key: 'toggleOptions',
+    value: function toggleOptions() {
+      this.setState({ showOptions: !this.state.showOptions });
+    }
+  }, {
     key: 'render',
     value: function render() {
       var _this9 = this;
@@ -101551,7 +101559,7 @@ var App = function (_Component) {
         { className: 'App', onClick: this.hideLogin },
         _react2.default.createElement(_Nav2.default, { login: this.showLogin, signup: this.showSignup, search: this.search, searchStr: this.state.searchStr, searchInput: function searchInput(value) {
             return _this9.searchInput(value);
-          }, loggedInUser: this.state.loggedInUser, logout: this.logout }),
+          }, loggedInUser: this.state.loggedInUser, logout: this.logout, showOptions: this.state.showOptions, toggleOptions: this.toggleOptions }),
         this.state.showLogin || this.state.showSignup ? _react2.default.createElement(_Login2.default, { signup: this.state.showSignup, togglePanel: this.togglePanel, doLogin: this.doLogin, doSignup: this.doSignup,
           email: this.state.email, changeEmail: this.changeEmail,
           password: this.state.password, changePassword: this.changePassword,
@@ -119102,7 +119110,6 @@ app.post("/login", function (req, res) {
         }
 
         _bcryptjs2.default.compare(req.body.password, user.password, function (err, result) {
-
             if (result) {
                 var payload = { id: user._id, email: user.email };
                 var token = _jsonwebtoken2.default.sign(payload, jwtOptions.secretOrKey);
