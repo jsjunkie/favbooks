@@ -44,6 +44,7 @@ class App extends Component {
     this.changeEmail = this.changeEmail.bind(this);
     this.changePassword = this.changePassword.bind(this);
     this.changeConfirmPassword = this.changeConfirmPassword.bind(this);
+    this.logout = this.logout.bind(this);
   }
 
   getLoggedInUser (accesstoken) {
@@ -212,10 +213,15 @@ class App extends Component {
     this.setState({confirmPassword});
   }
 
+  logout () {
+    localStorage.removeItem('accesstoken');
+    this.setState({loggedInUser: null});
+  }
+
   render() {
       return (
         <div className="App" onClick={this.hideLogin}>
-          <Nav login={this.showLogin} signup={this.showSignup} search={this.search} searchStr={this.state.searchStr} searchInput={value => this.searchInput(value)} loggedInUser={this.state.loggedInUser}/>
+          <Nav login={this.showLogin} signup={this.showSignup} search={this.search} searchStr={this.state.searchStr} searchInput={value => this.searchInput(value)} loggedInUser={this.state.loggedInUser} logout={this.logout}/>
           {this.state.showLogin || this.state.showSignup ? <Login signup={this.state.showSignup} togglePanel={this.togglePanel} doLogin={this.doLogin} doSignup={this.doSignup}
             email={this.state.email} changeEmail={this.changeEmail}
             password={this.state.password} changePassword={this.changePassword}

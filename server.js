@@ -99676,7 +99676,12 @@ var Nav = function (_Component) {
     function Nav() {
         _classCallCheck(this, Nav);
 
-        return _possibleConstructorReturn(this, (Nav.__proto__ || Object.getPrototypeOf(Nav)).apply(this, arguments));
+        var _this = _possibleConstructorReturn(this, (Nav.__proto__ || Object.getPrototypeOf(Nav)).call(this));
+
+        _this.state = {
+            showOptions: false
+        };
+        return _this;
     }
 
     _createClass(Nav, [{
@@ -99692,6 +99697,13 @@ var Nav = function (_Component) {
             e.preventDefault();
             e.stopPropagation();
             this.props.signup();
+        }
+    }, {
+        key: 'logout',
+        value: function logout(e) {
+            e.preventDefault();
+            this.setState({ showOptions: false });
+            this.props.logout();
         }
     }, {
         key: 'render',
@@ -99750,7 +99762,20 @@ var Nav = function (_Component) {
                                 { 'class': 'nav-link', href: 'Javascript:void(0);', style: { pointerEvents: 'none' } },
                                 this.props.loggedInUser
                             ),
-                            _react2.default.createElement('i', { 'class': 'fa fa-caret-down', style: { position: 'absolute', top: 10, right: -5, cursor: 'pointer' } })
+                            _react2.default.createElement('i', { 'class': 'fa fa-caret-down', style: { position: 'absolute', top: 10, right: -5, cursor: 'pointer' }, onClick: function onClick() {
+                                    return _this2.setState({ showOptions: !_this2.state.showOptions });
+                                } }),
+                            this.state.showOptions ? _react2.default.createElement(
+                                'ul',
+                                { style: { position: 'absolute', top: 30, right: -5, width: 100, background: '#dedede', listStyle: 'none' } },
+                                _react2.default.createElement(
+                                    'li',
+                                    { style: { padding: 5, cursor: 'pointer' }, onClick: function onClick(e) {
+                                            return _this2.logout(e);
+                                        } },
+                                    'Logout'
+                                )
+                            ) : ''
                         ) : '',
                         !this.props.loggedInUser ? _react2.default.createElement(
                             'li',
@@ -100129,6 +100154,7 @@ var App = function (_Component) {
     _this.changeEmail = _this.changeEmail.bind(_this);
     _this.changePassword = _this.changePassword.bind(_this);
     _this.changeConfirmPassword = _this.changeConfirmPassword.bind(_this);
+    _this.logout = _this.logout.bind(_this);
     return _this;
   }
 
@@ -100164,7 +100190,7 @@ var App = function (_Component) {
 
             _this2.setState({ books: books });
           } else {
-            _this2.setState({ showLogin: true });
+            _this2.setState({ showLogin: true, email: '', password: '', confirmPassword: '' });
           }
         });
       } else {
@@ -100180,7 +100206,7 @@ var App = function (_Component) {
 
             _this2.setState({ books: books });
           } else {
-            _this2.setState({ showLogin: true });
+            _this2.setState({ showLogin: true, email: '', password: '', confirmPassword: '' });
           }
         });
       }
@@ -100196,7 +100222,7 @@ var App = function (_Component) {
           if (response.status === 200) {
             return response.json();
           } else {
-            _this3.setState({ showLogin: true });
+            _this3.setState({ showLogin: true, email: '', password: '', confirmPassword: '' });
             throw new Error('Unauthorized');
           }
         }).then(function (book) {
@@ -100326,6 +100352,12 @@ var App = function (_Component) {
       this.setState({ confirmPassword: confirmPassword });
     }
   }, {
+    key: 'logout',
+    value: function logout() {
+      localStorage.removeItem('accesstoken');
+      this.setState({ loggedInUser: null });
+    }
+  }, {
     key: 'render',
     value: function render() {
       var _this7 = this;
@@ -100335,7 +100367,7 @@ var App = function (_Component) {
         { className: 'App', onClick: this.hideLogin },
         _react2.default.createElement(_Nav2.default, { login: this.showLogin, signup: this.showSignup, search: this.search, searchStr: this.state.searchStr, searchInput: function searchInput(value) {
             return _this7.searchInput(value);
-          }, loggedInUser: this.state.loggedInUser }),
+          }, loggedInUser: this.state.loggedInUser, logout: this.logout }),
         this.state.showLogin || this.state.showSignup ? _react2.default.createElement(_Login2.default, { signup: this.state.showSignup, togglePanel: this.togglePanel, doLogin: this.doLogin, doSignup: this.doSignup,
           email: this.state.email, changeEmail: this.changeEmail,
           password: this.state.password, changePassword: this.changePassword,
