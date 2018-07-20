@@ -6,6 +6,8 @@ import { renderToString } from 'react-dom/server';
 import { template } from './template.js';
 import mongoose from 'mongoose';
 import { database } from './database';
+import bcrypt from 'bcryptjs';
+const saltRounds = 10;
 
 //passport authentication
 import jwt from 'jsonwebtoken';
@@ -60,18 +62,20 @@ app.post("/login", (req, res) => {
               return;
             }
             
-            if(user.password === req.body.password) {
-              var payload = {id: user._id, email: user.email};
-              var token = jwt.sign(payload, jwtOptions.secretOrKey);
-              let { iat } = JSON.parse(atob(token.split('.')[1]))
-              database.updateUserToken(email, iat, err => console.log(err),
-                user => {
-                    res.json({message: "ok", token: token});
+            bcrypt.compare(req.body.password, user.password, (err, result) => {
+                if (result) {
+                    var payload = {id: user._id, email: user.email};
+                    var token = jwt.sign(payload, jwtOptions.secretOrKey);
+                    let { iat } = JSON.parse(atob(token.split('.')[1]))
+                    database.updateUserToken(email, iat, err => console.log(err),
+                        user => {
+                            res.json({message: "ok", token: token});
+                        }
+                    )
+                } else {
+                    res.status(401).json({message:"passwords did not match"});
                 }
-              )
-            } else {
-              res.status(401).json({message:"passwords did not match"});
-            }
+            });
         });    
 });
 
@@ -83,19 +87,21 @@ app.post("/signup", (req, res) => {
             err => console.err(err),
             user => {
                 if (!user) {
-                    database.addUser(email, password, null,
-                        err => console.log(err),
-                        user => {
-                            var payload = {id: user._id, email: user.email};
-                            var token = jwt.sign(payload, jwtOptions.secretOrKey);
-                            let { iat } = JSON.parse(atob(token.split('.')[1]))
-                            database.updateUserToken(email, iat, err => console.log(err),
-                                user => {
-                                    res.json({message: "ok", token: token});
-                                }
-                            )
-                        }
-                    )
+                    bcrypt.hash(password, saltRounds, (err, hash) => {
+                        database.addUser(email, hash, null,
+                            err => console.log(err),
+                            user => {
+                                var payload = {id: user._id, email: user.email};
+                                var token = jwt.sign(payload, jwtOptions.secretOrKey);
+                                let { iat } = JSON.parse(atob(token.split('.')[1]))
+                                database.updateUserToken(email, iat, err => console.log(err),
+                                    user => {
+                                        res.json({message: "ok", token: token});
+                                    }
+                                )
+                            }
+                        )
+                    })
                 } else {
                     res.status(401).json({message: 'User is already signed up'});
                 }
