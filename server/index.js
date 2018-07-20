@@ -60,7 +60,7 @@ app.post("/login", (req, res) => {
             }
             
             if(user.password === req.body.password) {
-              var payload = {id: user._id};
+              var payload = {id: user._id, email: user.email};
               var token = jwt.sign(payload, jwtOptions.secretOrKey);
               res.json({message: "ok", token: token});
             } else {
@@ -80,7 +80,7 @@ app.post("/signup", (req, res) => {
                     database.addUser(email, password,
                         err => console.log(err),
                         user => {
-                            var payload = {id: user._id};
+                            var payload = {id: user._id, email: user.email};
                             var token = jwt.sign(payload, jwtOptions.secretOrKey);
                             res.json({message: "ok", token: token});
                         }

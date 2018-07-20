@@ -30,12 +30,19 @@ export default class Nav extends Component {
                         <li class="nav-item ml-1 ml-xl-3">
                             <a class="nav-link" href="Javascript:void(0);"  >My Books</a>
                         </li>
+                        {this.props.loggedInUser ?
+                        <li class="nav-item ml-1 ml-xl-3" style={{position: 'relative'}}>
+                            <span class="nav-link" href="Javascript:void(0);" style={{pointerEvents: 'none'}}>{this.props.loggedInUser}</span>
+                            <i class="fa fa-caret-down" style={{position: 'absolute', top: 10, right: -5, cursor: 'pointer'}}></i>
+                        </li> : ''}
+                        {!this.props.loggedInUser ?
                         <li class="nav-item ml-1 ml-xl-3">
                             <a class="nav-link" href="Javascript:void(0);" onClick={(e) => this.login(e)}>Login</a>
-                        </li>
+                        </li> : ''}
+                        {!this.props.loggedInUser ?
                         <li class="nav-item ml-1 ml-xl-3">
                             <a class="nav-link btn-primary" style={{color: 'white'}} href="Javascript:void(0);" onClick = {(e) => this.signup(e)}>Sign up</a>
-                        </li>
+                        </li> : ''}
                     </ul>     
                 </div>
             </nav>

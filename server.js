@@ -99742,7 +99742,17 @@ var Nav = function (_Component) {
                                 'My Books'
                             )
                         ),
-                        _react2.default.createElement(
+                        this.props.loggedInUser ? _react2.default.createElement(
+                            'li',
+                            { 'class': 'nav-item ml-1 ml-xl-3', style: { position: 'relative' } },
+                            _react2.default.createElement(
+                                'span',
+                                { 'class': 'nav-link', href: 'Javascript:void(0);', style: { pointerEvents: 'none' } },
+                                this.props.loggedInUser
+                            ),
+                            _react2.default.createElement('i', { 'class': 'fa fa-caret-down', style: { position: 'absolute', top: 10, right: -5, cursor: 'pointer' } })
+                        ) : '',
+                        !this.props.loggedInUser ? _react2.default.createElement(
                             'li',
                             { 'class': 'nav-item ml-1 ml-xl-3' },
                             _react2.default.createElement(
@@ -99752,8 +99762,8 @@ var Nav = function (_Component) {
                                     } },
                                 'Login'
                             )
-                        ),
-                        _react2.default.createElement(
+                        ) : '',
+                        !this.props.loggedInUser ? _react2.default.createElement(
                             'li',
                             { 'class': 'nav-item ml-1 ml-xl-3' },
                             _react2.default.createElement(
@@ -99763,7 +99773,7 @@ var Nav = function (_Component) {
                                     } },
                                 'Sign up'
                             )
-                        )
+                        ) : ''
                     )
                 )
             );
@@ -100102,7 +100112,8 @@ var App = function (_Component) {
       newAuthor: '',
       email: '',
       password: '',
-      confirmPassword: ''
+      confirmPassword: '',
+      loggedInUser: null
     };
 
     _this.addBook = _this.addBook.bind(_this);
@@ -100122,6 +100133,20 @@ var App = function (_Component) {
   }
 
   _createClass(App, [{
+    key: 'getLoggedInUser',
+    value: function getLoggedInUser(accesstoken) {
+      return JSON.parse(atob(accesstoken.split('.')[1])).email;
+    }
+  }, {
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      var accesstoken = window.localStorage.getItem('accesstoken');
+      if (accesstoken !== null) {
+        var loggedInUser = this.getLoggedInUser(accesstoken);
+        this.setState({ loggedInUser: loggedInUser });
+      }
+    }
+  }, {
     key: 'changeVotes',
     value: function changeVotes(book, incr) {
       var _this2 = this;
@@ -100248,7 +100273,8 @@ var App = function (_Component) {
         }).then(function (res) {
           if (res.message === 'ok') {
             localStorage.setItem('accesstoken', res.token);
-            _this5.setState({ showLogin: false });
+            var loggedInUser = _this5.getLoggedInUser(res.token);
+            _this5.setState({ showLogin: false, loggedInUser: loggedInUser });
           } else {
             alert('Error: ' + res.message);
           }
@@ -100274,7 +100300,8 @@ var App = function (_Component) {
         }).then(function (res) {
           if (res.message === 'ok') {
             localStorage.setItem('accesstoken', res.token);
-            _this6.setState({ showSignup: false });
+            var loggedInUser = _this6.getLoggedInUser(res.token);
+            _this6.setState({ showSignup: false, loggedInUser: loggedInUser });
           } else {
             alert('Error: ' + res.message);
           }
@@ -100308,7 +100335,7 @@ var App = function (_Component) {
         { className: 'App', onClick: this.hideLogin },
         _react2.default.createElement(_Nav2.default, { login: this.showLogin, signup: this.showSignup, search: this.search, searchStr: this.state.searchStr, searchInput: function searchInput(value) {
             return _this7.searchInput(value);
-          } }),
+          }, loggedInUser: this.state.loggedInUser }),
         this.state.showLogin || this.state.showSignup ? _react2.default.createElement(_Login2.default, { signup: this.state.showSignup, togglePanel: this.togglePanel, doLogin: this.doLogin, doSignup: this.doSignup,
           email: this.state.email, changeEmail: this.changeEmail,
           password: this.state.password, changePassword: this.changePassword,
@@ -117849,7 +117876,7 @@ app.post("/login", function (req, res) {
         }
 
         if (user.password === req.body.password) {
-            var payload = { id: user._id };
+            var payload = { id: user._id, email: user.email };
             var token = _jsonwebtoken2.default.sign(payload, jwtOptions.secretOrKey);
             res.json({ message: "ok", token: token });
         } else {
@@ -117872,7 +117899,7 @@ app.post("/signup", function (req, res) {
                 _database.database.addUser(email, password, function (err) {
                     return console.log(err);
                 }, function (user) {
-                    var payload = { id: user._id };
+                    var payload = { id: user._id, email: user.email };
                     var token = _jsonwebtoken2.default.sign(payload, jwtOptions.secretOrKey);
                     res.json({ message: "ok", token: token });
                 });

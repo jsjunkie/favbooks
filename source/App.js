@@ -27,7 +27,8 @@ class App extends Component {
       newAuthor: '',
       email: '',
       password: '',
-      confirmPassword: ''
+      confirmPassword: '',
+      loggedInUser: null
     };
 
     this.addBook = this.addBook.bind(this);
@@ -45,6 +46,18 @@ class App extends Component {
     this.changeConfirmPassword = this.changeConfirmPassword.bind(this);
   }
 
+  getLoggedInUser (accesstoken) {
+    return JSON.parse(atob(accesstoken.split('.')[1])).email;
+  }
+
+  componentDidMount () {
+    let accesstoken = window.localStorage.getItem('accesstoken');
+    if (accesstoken !== null) {
+      let loggedInUser = this.getLoggedInUser(accesstoken);
+      this.setState({loggedInUser});
+    }
+  }
+
   changeVotes (book, incr) {
     if (incr) {
       service.upvote(book._id)
@@ -60,7 +73,7 @@ class App extends Component {
         
             this.setState({books});
           } else {
-            this.setState({showLogin: true});
+            this.setState({showLogin: true, email: '', password: '', confirmPassword: ''});
           }
         })
     } else {
@@ -77,7 +90,7 @@ class App extends Component {
         
             this.setState({books});
           } else {
-            this.setState({showLogin: true});
+            this.setState({showLogin: true, email: '', password: '', confirmPassword: ''});
           } 
         })
     }
@@ -91,7 +104,7 @@ class App extends Component {
           if (response.status === 200) {
             return response.json();
           } else {
-            this.setState({showLogin: true});
+            this.setState({showLogin: true, email: '', password: '', confirmPassword: ''});
             throw new Error('Unauthorized');
           }
         })
@@ -154,7 +167,8 @@ class App extends Component {
         .then(res => {
           if (res.message === 'ok') {
             localStorage.setItem('accesstoken', res.token);
-            this.setState({showLogin: false});
+            let loggedInUser = this.getLoggedInUser(res.token);
+            this.setState({showLogin: false, loggedInUser});
           } else {
             alert('Error: '+ res.message);
           }
@@ -176,7 +190,8 @@ class App extends Component {
         .then(res => {
           if (res.message === 'ok') {
             localStorage.setItem('accesstoken', res.token);
-            this.setState({showSignup: false});
+            let loggedInUser = this.getLoggedInUser(res.token);
+            this.setState({showSignup: false, loggedInUser});
           } else {
             alert('Error: '+ res.message);
           }
@@ -200,7 +215,7 @@ class App extends Component {
   render() {
       return (
         <div className="App" onClick={this.hideLogin}>
-          <Nav login={this.showLogin} signup={this.showSignup} search={this.search} searchStr={this.state.searchStr} searchInput={value => this.searchInput(value)}/>
+          <Nav login={this.showLogin} signup={this.showSignup} search={this.search} searchStr={this.state.searchStr} searchInput={value => this.searchInput(value)} loggedInUser={this.state.loggedInUser}/>
           {this.state.showLogin || this.state.showSignup ? <Login signup={this.state.showSignup} togglePanel={this.togglePanel} doLogin={this.doLogin} doSignup={this.doSignup}
             email={this.state.email} changeEmail={this.changeEmail}
             password={this.state.password} changePassword={this.changePassword}
