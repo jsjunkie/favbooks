@@ -48,39 +48,53 @@ class App extends Component {
   changeVotes (book, incr) {
     if (incr) {
       service.upvote(book._id)
-        .then(() => {
-          let books = this.state.books.map(item => {
-            if (item._id === book._id) {
-              return Object.assign({}, book, {votes: book.votes + 1});
-            } else {
-              return item;
-            }
-          });
-      
-          this.setState({books});
+        .then(res => {
+          if (res.status === 200){
+            let books = this.state.books.map(item => {
+              if (item._id === book._id) {
+                return Object.assign({}, book, {votes: book.votes + 1});
+              } else {
+                return item;
+              }
+            });
+        
+            this.setState({books});
+          } else {
+            this.setState({showLogin: true});
+          }
         })
     } else {
       service.downvote(book._id)
-        .then(() => {
-          let books = this.state.books.map(item => {
-            if (item._id === book._id) {
-              return Object.assign({}, book, {votes: book.votes - 1 < 0 ? 0 : book.votes - 1});
-            } else {
-              return item;
-            }
-          });
-      
-          this.setState({books});
+        .then(res => {
+          if (res.status === 200) {
+            let books = this.state.books.map(item => {
+              if (item._id === book._id) {
+                return Object.assign({}, book, {votes: book.votes - 1 < 0 ? 0 : book.votes - 1});
+              } else {
+                return item;
+              }
+            });
+        
+            this.setState({books});
+          } else {
+            this.setState({showLogin: true});
+          } 
         })
     }
-    
   }
 
   addBook () {
     if (this.state.newTitle !== '' && this.state.newAuthor !== ''){
       var newBook = { title: this.state.newTitle, author: this.state.newAuthor };
       service.addBook(newBook)
-        .then(response => response.json())
+        .then(response => {
+          if (response.status === 200) {
+            return response.json();
+          } else {
+            this.setState({showLogin: true});
+            throw new Error('Unauthorized');
+          }
+        })
         .then(book => {
           let books = this.state.books.slice();
           books.push(book);

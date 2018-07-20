@@ -4,18 +4,27 @@ let addBook = book => {
     return fetch('/book', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + localStorage.getItem('accesstoken')
           },
         body: JSON.stringify(book)
     })
 };
 
 let upvote = id => {
-    return fetch('/upvote/'+id);
+    return fetch('/upvote/'+id, {
+        headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('accesstoken')
+        }
+    });
 }
 
 let downvote = id => {
-    return fetch('/downvote/'+id);
+    return fetch('/downvote/'+id, {
+        headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('accesstoken')
+        }
+    });
 }
 
 let search = str => {

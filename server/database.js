@@ -73,7 +73,7 @@ let search = (str, errorCallback, callback) => {
 let User = mongoose.model('User', userSchema);
 
 let getUser = (id, errorCallback, callback) => {
-    User.findOne({id: id}, (error, user) => {
+    User.findOne({_id: mongoose.Types.ObjectId(id)}, (error, user) => {
         if (error) {
             errorCallback(error);
             return;

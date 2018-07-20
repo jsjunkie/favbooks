@@ -59990,7 +59990,7 @@ var search = function search(str, errorCallback, callback) {
 var User = _mongoose2.default.model('User', userSchema);
 
 var getUser = function getUser(id, errorCallback, callback) {
-    User.findOne({ id: id }, function (error, user) {
+    User.findOne({ _id: _mongoose2.default.Types.ObjectId(id) }, function (error, user) {
         if (error) {
             errorCallback(error);
             return;
@@ -99459,18 +99459,27 @@ var addBook = function addBook(book) {
     return fetch('/book', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + localStorage.getItem('accesstoken')
         },
         body: JSON.stringify(book)
     });
 };
 
 var upvote = function upvote(id) {
-    return fetch('/upvote/' + id);
+    return fetch('/upvote/' + id, {
+        headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('accesstoken')
+        }
+    });
 };
 
 var downvote = function downvote(id) {
-    return fetch('/downvote/' + id);
+    return fetch('/downvote/' + id, {
+        headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('accesstoken')
+        }
+    });
 };
 
 var search = function search(str) {
@@ -100118,28 +100127,36 @@ var App = function (_Component) {
       var _this2 = this;
 
       if (incr) {
-        _service.service.upvote(book._id).then(function () {
-          var books = _this2.state.books.map(function (item) {
-            if (item._id === book._id) {
-              return Object.assign({}, book, { votes: book.votes + 1 });
-            } else {
-              return item;
-            }
-          });
+        _service.service.upvote(book._id).then(function (res) {
+          if (res.status === 200) {
+            var books = _this2.state.books.map(function (item) {
+              if (item._id === book._id) {
+                return Object.assign({}, book, { votes: book.votes + 1 });
+              } else {
+                return item;
+              }
+            });
 
-          _this2.setState({ books: books });
+            _this2.setState({ books: books });
+          } else {
+            _this2.setState({ showLogin: true });
+          }
         });
       } else {
-        _service.service.downvote(book._id).then(function () {
-          var books = _this2.state.books.map(function (item) {
-            if (item._id === book._id) {
-              return Object.assign({}, book, { votes: book.votes - 1 < 0 ? 0 : book.votes - 1 });
-            } else {
-              return item;
-            }
-          });
+        _service.service.downvote(book._id).then(function (res) {
+          if (res.status === 200) {
+            var books = _this2.state.books.map(function (item) {
+              if (item._id === book._id) {
+                return Object.assign({}, book, { votes: book.votes - 1 < 0 ? 0 : book.votes - 1 });
+              } else {
+                return item;
+              }
+            });
 
-          _this2.setState({ books: books });
+            _this2.setState({ books: books });
+          } else {
+            _this2.setState({ showLogin: true });
+          }
         });
       }
     }
@@ -100151,7 +100168,12 @@ var App = function (_Component) {
       if (this.state.newTitle !== '' && this.state.newAuthor !== '') {
         var newBook = { title: this.state.newTitle, author: this.state.newAuthor };
         _service.service.addBook(newBook).then(function (response) {
-          return response.json();
+          if (response.status === 200) {
+            return response.json();
+          } else {
+            _this3.setState({ showLogin: true });
+            throw new Error('Unauthorized');
+          }
         }).then(function (book) {
           var books = _this3.state.books.slice();
           books.push(book);
