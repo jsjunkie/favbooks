@@ -61484,6 +61484,11 @@ var userSchema = _mongoose2.default.Schema({
     iat: Number
 });
 
+var favoriteSchema = _mongoose2.default.Schema({
+    email: String,
+    favorites: [String]
+});
+
 bookSchema.index({ title: 'text', author: 'text' });
 
 var Book = _mongoose2.default.model('Book', bookSchema);
@@ -61598,6 +61603,68 @@ var updateUserToken = function updateUserToken(email, iat, errorCallback, callba
     });
 };
 
+var Favorite = _mongoose2.default.model('Favorite', favoriteSchema);
+
+var addFavorite = function addFavorite(email, bookId, addOrRemove, errorCallback, callback) {
+    Favorite.findOne({ email: email }, function (error, favorite) {
+        if (error) {
+            errorCallback(error);
+            return;
+        }
+
+        if (favorite) {
+            var favorites = favorite.favorites;
+
+            if (addOrRemove === 'a') {
+                favorites.push(bookId);
+            } else if (addOrRemove === 'r') {
+                var index = favorites.indexOf(bookId);
+                if (index > -1) {
+                    favorites.splice(index, 1);
+                }
+            }
+
+            favorite.set({ favorites: favorites });
+
+            favorite.save(function (err, data) {
+                if (err) {
+                    errorCallback(err);
+                    return;
+                }
+
+                callback(data);
+            });
+        } else {
+            if (addOrRemove === 'r') {
+                errorCallback('Can remove favorite');
+                return;
+            }
+
+            var _favorite = new Favorite({ email: email, favorites: [bookId] });
+
+            _favorite.save(function (err, data) {
+                if (err) {
+                    errorCallback(err);
+                    return;
+                }
+
+                callback(data);
+            });
+        }
+    });
+};
+
+var getFavorites = function getFavorites(email, errorCallback, callback) {
+    Favorite.findOne({ email: email }, function (error, favorites) {
+        if (error) {
+            errorCallback(error);
+            return;
+        }
+
+        callback(favorites);
+    });
+};
+
 var database = exports.database = {
     getBooks: getBooks,
     addBook: addBook,
@@ -61606,7 +61673,9 @@ var database = exports.database = {
     getUser: getUser,
     getUserByEmail: getUserByEmail,
     addUser: addUser,
-    updateUserToken: updateUserToken
+    updateUserToken: updateUserToken,
+    addFavorite: addFavorite,
+    getFavorites: getFavorites
 };
 
 /***/ }),
@@ -101097,6 +101166,28 @@ var validateLogin = function validateLogin() {
     });
 };
 
+var addFavorite = function addFavorite(email, bookId, addOrRemove) {
+    return fetch('/addFavorite', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        credentials: 'same-origin',
+        body: JSON.stringify({ email: email, bookId: bookId, addOrRemove: addOrRemove })
+    });
+};
+
+var getFavorites = function getFavorites(email) {
+    return fetch('/getFavorites', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        credentials: 'same-origin',
+        body: JSON.stringify({ email: email })
+    });
+};
+
 var service = exports.service = {
     addBook: addBook,
     upvote: upvote,
@@ -101105,7 +101196,9 @@ var service = exports.service = {
     login: login,
     signup: signup,
     logout: logout,
-    validateLogin: validateLogin
+    validateLogin: validateLogin,
+    addFavorite: addFavorite,
+    getFavorites: getFavorites
 };
 
 /***/ }),
@@ -101545,7 +101638,7 @@ exports = module.exports = __webpack_require__(88)(false);
 
 
 // module
-exports.push([module.i, ".card {\n\twidth: 240px;\n\theight: 285px;\n\tdisplay: inline-block;\n\tborder: 1px solid gray;\n\tmargin: 10px;\n\tpadding: 10px;\n\tborder-radius: 4px;\n\tbox-shadow: 2px 2px 2px gray;\n\tposition: relative;\n\toverflow: hidden;\n}\n\n.card-title {\n\tfont-size: 25px;\n\tfont-family: Georgia, 'Times New Roman', Times, sans-serif;\n\tmax-height: 93px;\n\toverflow: hidden;\n}\n\n.card-button {\n\tmargin: 10px;\n}\n\n.button-left {\n\tleft: 20px;\n}\n\n.button-right {\n\tright: 20px;\n}\n\n.card-button:hover {\n\tbackground-color: orange;\n\tcolor: blue;\n}\n\n.card-button:focus {\n\toutline: none;\n}\n\n.card-votes {\n\tborder: 1px solid #dedede;\n\theight: 50px;\n\twidth: 40px;\n\tmargin: 5px auto;\n\tborder-radius: 4px;\n\tbackground-color: orange;\n\tcolor: blue;\n\tfont-size: 30px;\n}\n", ""]);
+exports.push([module.i, ".card {\n\twidth: 240px;\n\theight: 285px;\n\tdisplay: inline-block;\n\tborder: 1px solid gray;\n\tmargin: 10px;\n\tpadding: 10px;\n\tborder-radius: 4px;\n\tbox-shadow: 2px 2px 2px gray;\n\tposition: relative;\n\toverflow: hidden;\n}\n\n.card-title {\n\tfont-size: 25px;\n\tfont-family: Georgia, 'Times New Roman', Times, sans-serif;\n\tmax-height: 93px;\n\toverflow: hidden;\n}\n\n.card-button {\n\tmargin: 7px;\n}\n\n.button-left {\n\tleft: 20px;\n}\n\n.button-right {\n\tright: 20px;\n}\n\n.card-button:hover {\n\tbackground-color: orange;\n\tcolor: blue;\n}\n\n.card-button:focus {\n\toutline: none;\n}\n\n.card-votes {\n\tborder: 1px solid #dedede;\n\theight: 50px;\n\twidth: 40px;\n\tmargin: 5px auto;\n\tborder-radius: 4px;\n\tbackground-color: orange;\n\tcolor: blue;\n\tfont-size: 30px;\n}\n\n.favorite {\n\tfont-size: 20px;\n\tcursor: pointer;\n}\n", ""]);
 
 // exports
 
@@ -101624,6 +101717,9 @@ var Card = function (_Component) {
 							} },
 						'Upvote'
 					),
+					_react2.default.createElement('i', { 'class': 'fa fa-heart favorite', style: { color: this.props.isFavorite ? 'red' : 'gray' }, onClick: function onClick() {
+							return _this2.props.favorite();
+						} }),
 					_react2.default.createElement(
 						'button',
 						{ 'class': 'btn btn-primary card-button', onClick: function onClick() {
@@ -101755,40 +101851,63 @@ var App = function (_Component) {
   }
 
   _createClass(App, [{
-    key: 'getLoggedInUser',
-    value: function getLoggedInUser(accesstoken) {
-      return JSON.parse(atob(accesstoken.split('.')[1])).email;
+    key: 'getFavorites',
+    value: function getFavorites(loggedInUser) {
+      var _this2 = this;
+
+      _service.service.getFavorites(loggedInUser).then(function (res) {
+        return res.json();
+      }).then(function (data) {
+        if (data && data.favorites && data.favorites.length > 0) {
+          var favoriteBooks = data.favorites;
+          var books = _this2.state.books.map(function (book) {
+            return favoriteBooks.indexOf(book._id) >= 0 ? Object.assign({}, book, { isFavorite: true }) : book;
+          });
+          _this2.setState({ books: books });
+        }
+      }).catch(function (err) {
+        return console.log(err);
+      });
     }
   }, {
     key: 'componentDidMount',
     value: function componentDidMount() {
-      var _this2 = this;
+      var _this3 = this;
 
       _service.service.validateLogin().then(function (res) {
         if (res.status === 200) {
           return res.json();
-        } else {
+        } else if (res.status === 401) {
+          _this3.setState({ loggedInUser: null });
           throw new Error('Unauthorized');
+        } else {
+          throw new Error('Server error');
         }
       }).then(function (_ref) {
         var message = _ref.message,
             email = _ref.email;
 
-        var loggedInUser = message === 'ok' ? email : null;
-        _this2.setState({ loggedInUser: loggedInUser });
+        if (message !== 'ok') {
+          _this3.setState({ loggedInUser: null });
+        } else {
+          var loggedInUser = email;
+          _this3.setState({ loggedInUser: loggedInUser }, function () {
+            _this3.getFavorites(loggedInUser);
+          });
+        }
       }).catch(function (err) {
-        _this2.setState({ loggedInUser: null });
+        console.log(err);
       });
     }
   }, {
     key: 'changeVotes',
     value: function changeVotes(book, incr) {
-      var _this3 = this;
+      var _this4 = this;
 
       if (incr) {
         _service.service.upvote(book._id).then(function (res) {
           if (res.status === 200) {
-            var books = _this3.state.books.map(function (item) {
+            var books = _this4.state.books.map(function (item) {
               if (item._id === book._id) {
                 return Object.assign({}, book, { votes: book.votes + 1 });
               } else {
@@ -101796,15 +101915,15 @@ var App = function (_Component) {
               }
             });
 
-            _this3.setState({ books: books });
+            _this4.setState({ books: books });
           } else {
-            _this3.setState({ showLogin: true, email: '', password: '', confirmPassword: '', loggedInUser: null });
+            _this4.setState({ showLogin: true, email: '', password: '', confirmPassword: '', loggedInUser: null });
           }
         });
       } else {
         _service.service.downvote(book._id).then(function (res) {
           if (res.status === 200) {
-            var books = _this3.state.books.map(function (item) {
+            var books = _this4.state.books.map(function (item) {
               if (item._id === book._id) {
                 return Object.assign({}, book, { votes: book.votes - 1 < 0 ? 0 : book.votes - 1 });
               } else {
@@ -101812,9 +101931,9 @@ var App = function (_Component) {
               }
             });
 
-            _this3.setState({ books: books });
+            _this4.setState({ books: books });
           } else {
-            _this3.setState({ showLogin: true, email: '', password: '', confirmPassword: '', loggedInUser: null });
+            _this4.setState({ showLogin: true, email: '', password: '', confirmPassword: '', loggedInUser: null });
           }
         });
       }
@@ -101822,7 +101941,7 @@ var App = function (_Component) {
   }, {
     key: 'addBook',
     value: function addBook() {
-      var _this4 = this;
+      var _this5 = this;
 
       if (this.state.newTitle !== '' && this.state.newAuthor !== '') {
         var newBook = { title: this.state.newTitle, author: this.state.newAuthor };
@@ -101830,13 +101949,13 @@ var App = function (_Component) {
           if (response.status === 200) {
             return response.json();
           } else {
-            _this4.setState({ showLogin: true, email: '', password: '', confirmPassword: '', loggedInUser: null });
+            _this5.setState({ showLogin: true, email: '', password: '', confirmPassword: '', loggedInUser: null });
             throw new Error('Unauthorized');
           }
         }).then(function (book) {
-          var books = _this4.state.books.slice();
+          var books = _this5.state.books.slice();
           books.push(book);
-          _this4.setState({ books: books, newTitle: '' });
+          _this5.setState({ books: books, newTitle: '' });
         }).catch(function (err) {
           return console.log(err);
         });
@@ -101865,14 +101984,14 @@ var App = function (_Component) {
   }, {
     key: 'search',
     value: function search() {
-      var _this5 = this;
+      var _this6 = this;
 
       console.log('searched', this.state.searchStr);
       _service.service.search(this.state.searchStr).then(function (data) {
         console.log(data);
         return data.json();
       }).then(function (books) {
-        return _this5.setState({ books: books });
+        return _this6.setState({ books: books });
       }).catch(function (err) {
         return console.log(err);
       });
@@ -101895,7 +102014,7 @@ var App = function (_Component) {
   }, {
     key: 'doLogin',
     value: function doLogin() {
-      var _this6 = this;
+      var _this7 = this;
 
       if (this.state.email === '') {
         alert('Please enter email');
@@ -101907,7 +102026,9 @@ var App = function (_Component) {
         }).then(function (res) {
           if (res.message === 'ok') {
             var loggedInUser = res.email;
-            _this6.setState({ showLogin: false, loggedInUser: loggedInUser });
+            _this7.setState({ showLogin: false, loggedInUser: loggedInUser }, function () {
+              _this7.getFavorites(loggedInUser);
+            });
           } else {
             alert('Error: ' + res.message);
           }
@@ -101919,7 +102040,7 @@ var App = function (_Component) {
   }, {
     key: 'doSignup',
     value: function doSignup() {
-      var _this7 = this;
+      var _this8 = this;
 
       if (this.state.email === '') {
         alert('Please enter email');
@@ -101933,7 +102054,7 @@ var App = function (_Component) {
         }).then(function (res) {
           if (res.message === 'ok') {
             var loggedInUser = res.email;
-            _this7.setState({ showSignup: false, loggedInUser: loggedInUser });
+            _this8.setState({ showSignup: false, loggedInUser: loggedInUser });
           } else {
             alert('Error: ' + res.message);
           }
@@ -101960,7 +102081,7 @@ var App = function (_Component) {
   }, {
     key: 'logout',
     value: function logout() {
-      var _this8 = this;
+      var _this9 = this;
 
       _service.service.logout(this.state.loggedInUser).then(function (res) {
         return res.json();
@@ -101968,8 +102089,10 @@ var App = function (_Component) {
         var message = _ref2.message;
 
         if (message === 'ok') {
-          localStorage.removeItem('accesstoken');
-          _this8.setState({ loggedInUser: null });
+          var books = _this9.state.books.map(function (book) {
+            return Object.assign({}, book, { isFavorite: false });
+          });
+          _this9.setState({ loggedInUser: null, books: books });
         }
       });
     }
@@ -101979,15 +102102,43 @@ var App = function (_Component) {
       this.setState({ showOptions: !this.state.showOptions });
     }
   }, {
+    key: 'favorite',
+    value: function favorite(book) {
+      var _this10 = this;
+
+      var addOrRemove = book.isFavorite ? 'r' : 'a';
+      _service.service.addFavorite(this.state.loggedInUser, book._id, addOrRemove).then(function (res) {
+        if (res.status === 200) {
+          return res.json();
+        } else if (res.status === 401) {
+          _this10.setState({ showLogin: true, email: '', password: '', confirmPassword: '', loggedInUser: null });
+          throw new Error('Unauthorized');
+        } else {
+          throw new Error('Server error');
+        }
+      }).then(function (_ref3) {
+        var message = _ref3.message;
+
+        if (message === 'ok') {
+          var books = _this10.state.books.map(function (b) {
+            return b._id === book._id ? Object.assign({}, b, { isFavorite: !b.isFavorite }) : b;
+          });
+          _this10.setState({ books: books });
+        }
+      }).catch(function (err) {
+        return console.log(err);
+      });
+    }
+  }, {
     key: 'render',
     value: function render() {
-      var _this9 = this;
+      var _this11 = this;
 
       return _react2.default.createElement(
         'div',
         { className: 'App', onClick: this.hideLogin },
         _react2.default.createElement(_Nav2.default, { login: this.showLogin, signup: this.showSignup, search: this.search, searchStr: this.state.searchStr, searchInput: function searchInput(value) {
-            return _this9.searchInput(value);
+            return _this11.searchInput(value);
           }, loggedInUser: this.state.loggedInUser, logout: this.logout, showOptions: this.state.showOptions, toggleOptions: this.toggleOptions }),
         this.state.showLogin || this.state.showSignup ? _react2.default.createElement(_Login2.default, { signup: this.state.showSignup, togglePanel: this.togglePanel, doLogin: this.doLogin, doSignup: this.doSignup,
           email: this.state.email, changeEmail: this.changeEmail,
@@ -101999,10 +102150,13 @@ var App = function (_Component) {
           this.state.books.map(function (book) {
             return _react2.default.createElement(_Card2.default, _extends({}, book, {
               upvote: function upvote() {
-                return _this9.changeVotes(book, true);
+                return _this11.changeVotes(book, true);
               },
               downvote: function downvote() {
-                return _this9.changeVotes(book, false);
+                return _this11.changeVotes(book, false);
+              },
+              favorite: function favorite() {
+                return _this11.favorite(book);
               } }));
           })
         ),
@@ -102012,9 +102166,9 @@ var App = function (_Component) {
           '+'
         ),
         _react2.default.createElement(_AddCard2.default, { title: this.state.newTitle, addBook: this.addBook, textChange: function textChange(value) {
-            return _this9.textChange(value);
+            return _this11.textChange(value);
           }, author: this.state.newAuthor, authorTextChange: function authorTextChange(value) {
-            return _this9.authorTextChange(value);
+            return _this11.authorTextChange(value);
           } })
       );
     }
@@ -119417,6 +119571,29 @@ app.get('/books', function (req, res) {
         return console.err(err);
     }, function (books) {
         return res.send(books);
+    });
+});
+
+app.post('/getFavorites', _passport2.default.authenticate('jwt', { session: false }), function (req, res) {
+    var email = req.body.email;
+
+    _database.database.getFavorites(email, function (err) {
+        return console.log(err);
+    }, function (favorites) {
+        return res.send(favorites);
+    });
+});
+
+app.post('/addFavorite', _passport2.default.authenticate('jwt', { session: false }), function (req, res) {
+    var _req$body2 = req.body,
+        email = _req$body2.email,
+        bookId = _req$body2.bookId,
+        addOrRemove = _req$body2.addOrRemove;
+
+    _database.database.addFavorite(email, bookId, addOrRemove, function (err) {
+        return console.log(err);
+    }, function () {
+        return res.json({ message: 'ok' });
     });
 });
 

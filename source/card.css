@@ -19,7 +19,7 @@
 }
 
 .card-button {
-	margin: 10px;
+	margin: 7px;
 }
 
 .button-left {
@@ -48,4 +48,9 @@
 	background-color: orange;
 	color: blue;
 	font-size: 30px;
+}
+
+.favorite {
+	font-size: 20px;
+	cursor: pointer;
 }

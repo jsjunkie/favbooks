@@ -178,6 +178,22 @@ app.get('/books', (req, res) => {
         books => res.send(books));
 })
 
+app.post('/getFavorites', passport.authenticate('jwt', {session: false}), (req, res) => {
+    let { email } = req.body;
+    database.getFavorites(email, 
+        err => console.log(err),
+        favorites => res.send(favorites)
+    );
+})
+
+app.post('/addFavorite', passport.authenticate('jwt', { session: false }), (req, res) => {
+    let { email, bookId, addOrRemove } = req.body;
+    database.addFavorite(email, bookId, addOrRemove,
+        err => console.log(err),
+        () => res.json({message: 'ok'})
+    )
+})
+
 app.get('/', (req, res) => {
     database.getBooks(
         err => console.err(err),

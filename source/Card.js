@@ -12,6 +12,7 @@ class Card extends Component {
 					</div>
 					<div className="card-votes">{this.props.votes}</div>
 					<button class="btn btn-primary card-button" onClick={() => this.props.upvote()}>Upvote</button>
+					<i class="fa fa-heart favorite" style={{color: this.props.isFavorite ? 'red' : 'gray'}} onClick={() => this.props.favorite()}></i>
 					<button class="btn btn-primary card-button" onClick={() => this.props.downvote()}>Downvote</button>
 				</div>
 			</div>);

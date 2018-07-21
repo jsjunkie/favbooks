@@ -66,6 +66,28 @@ let validateLogin = () => {
     })
 }
 
+let addFavorite = (email, bookId, addOrRemove) => {
+    return fetch('/addFavorite', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        credentials: 'same-origin',
+        body: JSON.stringify({email, bookId, addOrRemove})
+    })
+}
+
+let getFavorites = email => {
+    return fetch('/getFavorites', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        credentials: 'same-origin',
+        body: JSON.stringify({email})
+    })
+}
+
 export const service = {
     addBook: addBook,
     upvote: upvote,
@@ -74,5 +96,7 @@ export const service = {
     login: login,
     signup: signup,
     logout: logout,
-    validateLogin: validateLogin
+    validateLogin: validateLogin,
+    addFavorite: addFavorite,
+    getFavorites: getFavorites
 }

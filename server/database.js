@@ -13,6 +13,11 @@ let userSchema = mongoose.Schema({
     iat: Number
 });
 
+let favoriteSchema = mongoose.Schema({
+    email: String,
+    favorites: [String]
+})
+
 bookSchema.index({title: 'text', author: 'text'});
 
 let Book = mongoose.model('Book', bookSchema);
@@ -127,6 +132,67 @@ let updateUserToken = (email, iat, errorCallback, callback) => {
     })
 }
 
+let Favorite = mongoose.model('Favorite', favoriteSchema);
+
+let addFavorite = (email, bookId, addOrRemove, errorCallback, callback) => {
+    Favorite.findOne({email: email}, (error, favorite) => {
+        if (error) {
+            errorCallback(error);
+            return;
+        }
+
+        if (favorite) {
+            let { favorites } = favorite;
+            if (addOrRemove === 'a') {
+                favorites.push(bookId);
+            } else if (addOrRemove === 'r') {
+                var index = favorites.indexOf(bookId);
+                if (index > -1) {
+                    favorites.splice(index, 1);
+                }
+            }
+
+            favorite.set({favorites: favorites});
+
+            favorite.save((err, data) => {
+                if (err) {
+                    errorCallback(err);
+                    return;
+                }
+
+                callback(data);
+            });
+        } else {
+            if (addOrRemove === 'r') {
+                errorCallback('Can remove favorite')
+                return;
+            }
+
+            let favorite = new Favorite({email: email, favorites: [bookId]});
+
+            favorite.save((err, data) => {
+                if (err) {
+                    errorCallback(err);
+                    return;
+                }
+
+                callback(data);
+            });
+        }
+    })
+}
+
+let getFavorites = (email, errorCallback, callback) => {
+    Favorite.findOne({email: email}, (error, favorites) => {
+        if (error) {
+            errorCallback(error);
+            return;
+        }
+
+        callback(favorites);
+    })
+}
+
 export const database = {
     getBooks: getBooks,
     addBook: addBook,
@@ -135,5 +201,7 @@ export const database = {
     getUser: getUser,
     getUserByEmail: getUserByEmail,
     addUser: addUser,
-    updateUserToken: updateUserToken
+    updateUserToken: updateUserToken,
+    addFavorite: addFavorite,
+    getFavorites: getFavorites
 }

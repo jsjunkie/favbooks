@@ -49,8 +49,18 @@ class App extends Component {
     this.toggleOptions = this.toggleOptions.bind(this);
   }
 
-  getLoggedInUser (accesstoken) {
-    return JSON.parse(atob(accesstoken.split('.')[1])).email;
+  getFavorites (loggedInUser) {
+    service.getFavorites(loggedInUser)
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.favorites && data.favorites.length > 0) {
+          let favoriteBooks = data.favorites;
+          let books = this.state.books
+            .map(book => (favoriteBooks.indexOf(book._id) >= 0) ? Object.assign({}, book, { isFavorite: true }) : book);
+          this.setState({books});
+        }
+      })  
+      .catch(err => console.log(err));
   }
 
   componentDidMount () {
@@ -58,17 +68,25 @@ class App extends Component {
       .then(res => {
         if (res.status === 200) {
           return res.json()
-        } else {
+        } else if (res.status === 401) {
+          this.setState({loggedInUser: null});
           throw new Error('Unauthorized');
-        } 
+        } else {
+          throw new Error('Server error');
+        }
       })
       .then(({message, email}) => {
-        let loggedInUser = message === 'ok' ? email : null;
-        this.setState({loggedInUser});
-        
+        if (message !== 'ok') {
+          this.setState({loggedInUser: null});
+        } else {
+          let loggedInUser = email;
+          this.setState({loggedInUser}, () => {
+            this.getFavorites(loggedInUser);
+          });
+        }
       })
       .catch(err => {
-        this.setState({loggedInUser: null});
+        console.log(err);
       })
   }
 
@@ -181,7 +199,9 @@ class App extends Component {
         .then(res => {
           if (res.message === 'ok') {
             let loggedInUser = res.email;
-            this.setState({showLogin: false, loggedInUser});
+            this.setState({showLogin: false, loggedInUser}, () => {
+              this.getFavorites(loggedInUser);
+            });
           } else {
             alert('Error: '+ res.message);
           }
@@ -229,14 +249,36 @@ class App extends Component {
       .then(res => res.json())
       .then(({message}) => {
         if (message === 'ok') {
-          localStorage.removeItem('accesstoken');
-          this.setState({loggedInUser: null});
+          let books = this.state.books.map(book => Object.assign({}, book, { isFavorite: false }));
+          this.setState({loggedInUser: null, books});
         }
       })
   }
 
   toggleOptions () {
     this.setState({showOptions: !this.state.showOptions});
+  }
+
+  favorite (book) {
+    let addOrRemove = book.isFavorite ? 'r' : 'a';
+    service.addFavorite(this.state.loggedInUser, book._id, addOrRemove)
+      .then(res => {
+        if (res.status === 200) {
+          return res.json();
+        } else if (res.status === 401) {
+          this.setState({showLogin: true, email: '', password: '', confirmPassword: '', loggedInUser: null});
+          throw new Error('Unauthorized');
+        } else {
+          throw new Error('Server error');
+        }
+      })
+      .then(({message}) => {
+        if (message === 'ok') {
+          let books = this.state.books.map(b => b._id === book._id ? Object.assign({}, b, {isFavorite: !b.isFavorite}) : b);
+          this.setState({books});
+        }
+      })
+      .catch(err => console.log(err));
   }
  
   render() {
@@ -250,7 +292,8 @@ class App extends Component {
           <div style={{marginTop: 100}}>
           {this.state.books.map(book => <Card {...book} 
                                               upvote={() => this.changeVotes(book, true)}
-                                              downvote={() => this.changeVotes(book, false)}/>)}
+                                              downvote={() => this.changeVotes(book, false)}
+                                              favorite={() => this.favorite(book)}/>)}
           </div>
           <span className="AddButton" data-toggle="modal" data-target="#addCard">+</span>
             
