@@ -50,6 +50,10 @@ class App extends Component {
   }
 
   getFavorites (loggedInUser) {
+    if (loggedInUser === null) {
+      return;
+    }
+
     service.getFavorites(loggedInUser)
       .then(res => res.json())
       .then(data => {
@@ -166,13 +170,9 @@ class App extends Component {
   }
 
   search () {
-    console.log('searched', this.state.searchStr);
     service.search(this.state.searchStr)
-      .then(data => {
-        console.log(data);
-        return data.json()
-      })
-      .then(books => this.setState({books}))
+      .then(data => data.json())
+      .then(books => this.setState({books}, () => this.getFavorites(this.state.loggedInUser)))
       .catch(err => console.log(err));
   }
 

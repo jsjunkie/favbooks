@@ -101855,6 +101855,10 @@ var App = function (_Component) {
     value: function getFavorites(loggedInUser) {
       var _this2 = this;
 
+      if (loggedInUser === null) {
+        return;
+      }
+
       _service.service.getFavorites(loggedInUser).then(function (res) {
         return res.json();
       }).then(function (data) {
@@ -101986,12 +101990,12 @@ var App = function (_Component) {
     value: function search() {
       var _this6 = this;
 
-      console.log('searched', this.state.searchStr);
       _service.service.search(this.state.searchStr).then(function (data) {
-        console.log(data);
         return data.json();
       }).then(function (books) {
-        return _this6.setState({ books: books });
+        return _this6.setState({ books: books }, function () {
+          return _this6.getFavorites(_this6.state.loggedInUser);
+        });
       }).catch(function (err) {
         return console.log(err);
       });
