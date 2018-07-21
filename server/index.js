@@ -8,6 +8,7 @@ import mongoose from 'mongoose';
 import { database } from './database';
 import bcrypt from 'bcryptjs';
 const saltRounds = 10;
+import cookieParser from 'cookie-parser';
 
 //passport authentication
 import jwt from 'jsonwebtoken';
@@ -19,7 +20,15 @@ var ExtractJwt = passportJWT.ExtractJwt;
 var JwtStrategy = passportJWT.Strategy;
 
 var jwtOptions = {}
-jwtOptions.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
+jwtOptions.jwtFromRequest = ExtractJwt.fromExtractors([req => {
+    var token = null;
+    if (req && req.cookies) {
+        token = req.cookies['jwt'];
+    }
+
+    return token;
+}]);
+
 jwtOptions.secretOrKey = 'bookmela';
 
 var strategy = new JwtStrategy(jwtOptions, function(jwt_payload, next) {
@@ -43,6 +52,8 @@ app.use(passport.initialize());
 
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json())
+
+app.use(cookieParser());
 
 app.use(express.static('client'));
 
@@ -69,7 +80,8 @@ app.post("/login", (req, res) => {
                     let { iat } = JSON.parse(atob(token.split('.')[1]))
                     database.updateUserToken(email, iat, err => console.log(err),
                         user => {
-                            res.json({message: "ok", token: token});
+                            res.cookie('jwt', token, { maxAge: 24*60*60*1000, httpOnly: true });
+                            res.json({message: "ok", email});
                         }
                     )
                 } else {
@@ -96,7 +108,8 @@ app.post("/signup", (req, res) => {
                                 let { iat } = JSON.parse(atob(token.split('.')[1]))
                                 database.updateUserToken(email, iat, err => console.log(err),
                                     user => {
-                                        res.json({message: "ok", token: token});
+                                        res.cookie('jwt', token, { maxAge: 24*60*60*1000, httpOnly: true });
+                                        res.json({message: "ok", email});
                                     }
                                 )
                             }
@@ -120,13 +133,16 @@ app.post('/logout', (req, res) => {
     database.updateUserToken(email, null,
         err => console.log(err),
         user => {
+            res.cookie('jwt', null, { maxAge: -60000, httpOnly: true });
             res.json({message: 'ok'});
         }
     )
 })
 
 app.get('/validateLogin', passport.authenticate('jwt', {session: false}), (req, res) => {
-    res.json({message: 'ok'});
+    let token = req.cookies['jwt'];
+    let { email } = JSON.parse(atob(token.split('.')[1]))
+    res.json({message: 'ok', email});
 })
 
 app.post('/book', passport.authenticate('jwt', {session: false}), (req, res) => {

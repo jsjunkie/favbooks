@@ -4,26 +4,22 @@ let addBook = book => {
     return fetch('/book', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + localStorage.getItem('accesstoken')
+            'Content-Type': 'application/json'
           },
+        credentials: 'same-origin',
         body: JSON.stringify(book)
     })
 };
 
 let upvote = id => {
     return fetch('/upvote/'+id, {
-        headers: {
-            'Authorization': 'Bearer ' + localStorage.getItem('accesstoken')
-        }
+        credentials: 'same-origin'
     });
 }
 
 let downvote = id => {
     return fetch('/downvote/'+id, {
-        headers: {
-            'Authorization': 'Bearer ' + localStorage.getItem('accesstoken')
-        }
+        credentials: 'same-origin'
     });
 }
 
@@ -35,8 +31,9 @@ let login = user => {
     return fetch('/login', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
         },
+        credentials: 'same-origin',
         body: JSON.stringify(user)
     })
 }
@@ -47,6 +44,7 @@ let signup = user => {
         headers: {
             'Content-Type': 'application/json'
         },
+        credentials: 'same-origin',
         body: JSON.stringify(user)
     })
 }
@@ -57,15 +55,14 @@ let logout = email => {
         headers: {
             'Content-Type': 'application/json'
         },
+        credentials: 'same-origin',
         body: JSON.stringify({email})
     })
 }
 
 let validateLogin = () => {
     return fetch('/validateLogin', {
-        headers: {
-            Authorization: 'Bearer ' + localStorage.getItem('accesstoken')
-        }
+        credentials: 'same-origin'
     })
 }
 

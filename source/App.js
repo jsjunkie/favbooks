@@ -54,28 +54,22 @@ class App extends Component {
   }
 
   componentDidMount () {
-    let accesstoken = window.localStorage.getItem('accesstoken');
-    if (accesstoken === null) {
-      this.setState({loggedInUser: null});
-    } else {
-      service.validateLogin()
-        .then(res => {
-          if (res.status === 200) {
-            return res.json()
-          } else {
-            throw new Error('Unauthorized');
-          } 
-        })
-        .then(({message}) => {
-          let loggedInUser = message === 'ok' ? this.getLoggedInUser(accesstoken) : null;
-          this.setState({loggedInUser});
-          
-        })
-        .catch(err => {
-          this.setState({loggedInUser: null});
-        })
-      
-    }
+    service.validateLogin()
+      .then(res => {
+        if (res.status === 200) {
+          return res.json()
+        } else {
+          throw new Error('Unauthorized');
+        } 
+      })
+      .then(({message, email}) => {
+        let loggedInUser = message === 'ok' ? email : null;
+        this.setState({loggedInUser});
+        
+      })
+      .catch(err => {
+        this.setState({loggedInUser: null});
+      })
   }
 
   changeVotes (book, incr) {
@@ -186,8 +180,7 @@ class App extends Component {
         .then(data => data.json())
         .then(res => {
           if (res.message === 'ok') {
-            localStorage.setItem('accesstoken', res.token);
-            let loggedInUser = this.getLoggedInUser(res.token);
+            let loggedInUser = res.email;
             this.setState({showLogin: false, loggedInUser});
           } else {
             alert('Error: '+ res.message);
@@ -209,8 +202,7 @@ class App extends Component {
         .then(data => data.json())
         .then(res => {
           if (res.message === 'ok') {
-            localStorage.setItem('accesstoken', res.token);
-            let loggedInUser = this.getLoggedInUser(res.token);
+            let loggedInUser = res.email;
             this.setState({showSignup: false, loggedInUser});
           } else {
             alert('Error: '+ res.message);
