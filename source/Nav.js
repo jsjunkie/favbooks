@@ -36,7 +36,7 @@ export default class Nav extends Component {
                 </button>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav mr-auto">
-                        <li class="nav-item ml-1 ml-xl-3 active">
+                        <li class="nav-item ml-1 ml-xl-3">
                             <Link to="/" class="nav-link" href="Javascript:void(0);">Home</Link>
                         </li>
                         <li class="nav-item ml-1 ml-xl-3">
