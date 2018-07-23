@@ -302,7 +302,10 @@ class App extends Component {
               newAuthor={this.state.newAuthor}
               authorTextChange={value => this.authorTextChange(value)}/>}
             />
-          <Route path="/mybooks" component={MyBooks} />
+          <Route path="/mybooks"
+            render={props => <MyBooks {...props}
+              books={this.state.books.filter(book => book.isFavorite)}/>}
+            />
         </div>
       );
     
