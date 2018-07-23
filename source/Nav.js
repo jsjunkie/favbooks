@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Search from './Search.js';
+import { Link } from 'react-router-dom';
 
 export default class Nav extends Component {
     login (e) {
@@ -36,10 +37,10 @@ export default class Nav extends Component {
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav mr-auto">
                         <li class="nav-item ml-1 ml-xl-3 active">
-                            <a class="nav-link" href="Javascript:void(0);" >Home</a>
+                            <Link to="/" class="nav-link" href="Javascript:void(0);">Home</Link>
                         </li>
                         <li class="nav-item ml-1 ml-xl-3">
-                            <a class="nav-link" href="Javascript:void(0);"  >My Books</a>
+                            <Link to="/mybooks" class="nav-link" href="Javascript:void(0);">My Books</Link>
                         </li>
                         {this.props.loggedInUser ?
                         <li class="nav-item ml-1 ml-xl-3" style={{position: 'relative'}}>

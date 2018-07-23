@@ -10,6 +10,7 @@ import bcrypt from 'bcryptjs';
 const saltRounds = 10;
 import cookieParser from 'cookie-parser';
 
+import { StaticRouter as Router } from 'react-router-dom';
 //passport authentication
 import jwt from 'jsonwebtoken';
 import passport from 'passport';
@@ -194,16 +195,20 @@ app.post('/addFavorite', passport.authenticate('jwt', { session: false }), (req,
     )
 })
 
-app.get('/', (req, res) => {
+app.get(/^\/(mybooks)?$/, (req, res) => {
     database.getBooks(
         err => console.err(err),
         books => {
-            let body = renderToString(<App books={books}/>);
+            let body = renderToString(<Router><App books={books}/></Router>);
             let page = template('My favorite books', body, books);
             res.send(page);
         }
     )
     
+})
+
+app.get('/*', (req, res) => {
+    res.status(404).json('This path does not exist');
 })
 
 mongoose.connect(process.env.MONGODB);

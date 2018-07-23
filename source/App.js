@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import './App.css';
-import Card from './Card.js';
-import AddCard from './AddCard.js';
 import Nav from './Nav.js';
 import Login from './Login.js';
 import Search from './Search.js';
 import { service } from './service.js';
+
+import { Route } from 'react-router-dom';
+import Home from './Home';
+import MyBooks from './MyBooks';
 
 class App extends Component {
   constructor (props) {
@@ -289,15 +291,18 @@ class App extends Component {
             email={this.state.email} changeEmail={this.changeEmail}
             password={this.state.password} changePassword={this.changePassword}
             confirmPassword={this.state.confirmPassword} changeConfirmPassword={this.changeConfirmPassword}/> : ''}
-          <div style={{marginTop: 100}}>
-          {this.state.books.map(book => <Card {...book} 
-                                              upvote={() => this.changeVotes(book, true)}
-                                              downvote={() => this.changeVotes(book, false)}
-                                              favorite={() => this.favorite(book)}/>)}
-          </div>
-          <span className="AddButton" data-toggle="modal" data-target="#addCard">+</span>
-            
-          <AddCard title={this.state.newTitle} addBook={this.addBook} textChange={(value) => this.textChange(value)} author={this.state.newAuthor} authorTextChange={value => this.authorTextChange(value)}/>
+          <Route exact path="/" 
+            render = {props => <Home {...props} 
+              books={this.state.books}
+              changeVotes={(book, isUpvote) => this.changeVotes(book, isUpvote)}
+              favorite={book => this.favorite(book)}
+              newTitle={this.state.newTitle}
+              addBook={this.addBook}
+              textChange={value => this.textChange(value)}
+              newAuthor={this.state.newAuthor}
+              authorTextChange={value => this.authorTextChange(value)}/>}
+            />
+          <Route path="/mybooks" component={MyBooks} />
         </div>
       );
     
