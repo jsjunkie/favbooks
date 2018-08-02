@@ -3,7 +3,7 @@
     border-right: 0px;
     border-left: 0px;
     border-radius: 0px;
-    font-size: 22px;
+    font-size: 20px;
     padding-bottom: 0px;
     padding-left: 1px;
     margin-left: 7px;
@@ -11,12 +11,14 @@
     font-family: 'Roboto', sans-serif;
     background: transparent;
     width: 80% !important;
+    color: #fff !important;
 }
 
 .SearchInput:focus {
     box-shadow: none;
     border-color: #ced4da;
     background: transparent;
+    color: #fff !important;
 }
 
 .SearchInput:placeholder {
@@ -30,4 +32,16 @@
 
 .SearchForm {
     padding-right: 30px;
+}
+
+.SearchButton {
+    border-color: #fff;
+}
+
+.SearchButton:hover {
+    background: #fff;
+}
+
+.SearchButton:focus {
+    box-shadow: none;
 }

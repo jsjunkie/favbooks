@@ -4,7 +4,7 @@ import './card.css';
 class Card extends Component {
 	render () {
 		return (
-			<div class="card" style={{width: '18rem'}}>
+			<div class="card" style={{width: '14rem'}}>
 				<div class="card-body">
 					<div style={{height: 135}}>
 						<h5 class="card-title">{this.props.title}</h5>
