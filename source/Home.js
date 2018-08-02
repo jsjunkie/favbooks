@@ -7,6 +7,7 @@ export default class Home extends Component {
         return (
         <div>
             <div style={{marginTop: 100}}>
+            <h3 style={{fontWeight: 'bold', marginBottom: 15}}>Most Upvoted books</h3>
             {this.props.books.map(book => <Card {...book} 
                                               upvote={() => this.props.changeVotes(book, true)}
                                               downvote={() => this.props.changeVotes(book, false)}

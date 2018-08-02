@@ -9,7 +9,8 @@
 	box-shadow: 2px 2px 2px gray;
 	position: relative;
 	overflow: hidden;
-	background: #DFDFDF;
+	background: #FFF;
+	border: 1px solid #dfdfdf;
 }
 
 .card-title {
