@@ -20,7 +20,7 @@
 }
 
 .card-button {
-	margin: 3px;
+	margin: 7px;
 	font-size: 0.8rem;
 	padding: 1px 7px 2px;
 }
@@ -56,4 +56,9 @@
 .favorite {
 	font-size: 20px;
 	cursor: pointer;
+}
+
+.voteButton {
+	font-size: 20px;
+	margin: 2px;
 }
