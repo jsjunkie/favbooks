@@ -14,5 +14,14 @@
 .AddCardTitle {
     font-size: 30px;
     font-family: Helvetica sans-serif;
-    background: orange;
+    background: #373F51;
+    color: #fff;
+}
+
+.CloseButton {
+    color: #fff;
+}
+
+.CloseButton:hover {
+    color: #fff;
 }
