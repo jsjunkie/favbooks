@@ -24,6 +24,7 @@
 	margin: 7px;
 	font-size: 0.8rem;
 	padding: 1px 7px 2px;
+	transition: 0.5s;
 }
 
 .button-left {

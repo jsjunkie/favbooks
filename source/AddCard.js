@@ -11,7 +11,7 @@ class AddCard extends Component{
     render () {
         return (
             <div class="modal fade" id="addCard" tabindex="-1" role="dialog" aria-labelledby="addCard" aria-hidden="true">
-                <div class="modal-dialog" role="document">
+                <div class="modal-dialog modal-dialog-centered fromBelow" role="document">
                 <div class="modal-content">
                     <div class="modal-header AddCardTitle">
                     <h5 class="modal-title" id="exampleModalLabel">Add a book</h5>

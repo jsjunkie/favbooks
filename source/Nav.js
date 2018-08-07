@@ -1,7 +1,28 @@
 import React, { Component } from 'react';
 import Search from './Search.js';
-import { Link } from 'react-router-dom';
+import { Route, Link } from 'react-router-dom';
 import './Nav.css';
+
+const MenuLink = ({label, to, activeOnlyWhenExact}) => (
+    <Route 
+        path={to}
+        exact={activeOnlyWhenExact}
+        children={({match}) => (
+            <div>
+            <Link to={to} class="nav-link navitemstyle" href="Javascript:void(0);">{label}</Link>
+            {match ?
+            <div style={{
+                background: '#FFF',
+                height: 3,
+                marginTop: -5,
+                width: to === '/' ? 48 : 78,
+                marginLeft: 6}}
+            ></div> : ''}
+            </div>
+        )}
+    />
+        
+)
 
 export default class Nav extends Component {
     login (e) {
@@ -38,10 +59,10 @@ export default class Nav extends Component {
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav mr-auto">
                         <li class="nav-item ml-1 ml-xl-3">
-                            <Link to="/" class="nav-link navitemstyle" href="Javascript:void(0);">Home</Link>
+                            <MenuLink to="/" label="Home" activeOnlyWhenExact={true} />
                         </li>
                         <li class="nav-item ml-1 ml-xl-3">
-                            <Link to="/mybooks" class="nav-link navitemstyle" href="Javascript:void(0);">My Books</Link>
+                            <MenuLink to="/mybooks" label="My Books"/>
                         </li>
                         {this.props.loggedInUser ?
                         <li class="nav-item ml-1 ml-xl-3" style={{position: 'relative'}}>
@@ -49,7 +70,7 @@ export default class Nav extends Component {
                             <i class="fa fa-caret-down" style={{position: 'absolute', top: 10, right: -5, cursor: 'pointer', color: '#fff'}} onClick={e => this.toggleOptions(e)}></i>
                             {this.props.showOptions ? 
                             <ul style={{position: 'absolute', top: 33, right: -5, width: 100, background: '#dedede', listStyle: 'none', padding: '0 5px', boxShadow: '2px 2px 2px gray'}}>
-                                <li style={{padding: 5, cursor: 'pointer'}} onClick={e => this.logout(e)}>Logout</li>
+                                <li style={{padding: 5, cursor: 'pointer', userSelect: 'none'}} onClick={e => this.logout(e)}>Logout</li>
                             </ul> : ''}
                         </li> : ''}
                         {!this.props.loggedInUser ?

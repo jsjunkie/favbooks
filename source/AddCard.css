@@ -25,3 +25,13 @@
 .CloseButton:hover {
     color: #fff;
 }
+
+.modal.fade .fromBelow {
+    transfrom: translate(0, 100%) !important;
+    -webkit-transform: translate(0, 100%) !important;
+}
+
+.modal.show .fromBelow {
+    transfrom: translate(0, 0) !important;
+    -webkit-transform: translate(0, 0) !important;
+}
