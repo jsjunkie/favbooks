@@ -18,18 +18,23 @@ body {
   border-radius: 50%;
   background: red;
   color: white;
-  width: 50px;
-  height: 50px;
+  width: 32px;
+  height: 32px;
   position: fixed;
   bottom: 40px;
   right: 50px;
   font-size: 37px;
   cursor: pointer;
-  line-height: 1.25;
+  line-height: 0.75;
+  transition: 0.2s;
 }
 
 .AddButton:hover {
-  box-shadow: 2px 2px 2px gray;
+  width: 50px;
+  height: 50px;
+  line-height: 1.25;
+  bottom: 30px;
+  right: 40px;
 }
 
 .ShowAddCard {

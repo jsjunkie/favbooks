@@ -148,7 +148,7 @@ class App extends Component {
         })
         .then(book => {
           let books = this.state.books.slice();
-          books.push(book);
+          books.unshift(book);
           this.setState({books, newTitle: ''});
         })
         .catch(err => console.log(err));
