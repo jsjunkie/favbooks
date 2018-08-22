@@ -5,7 +5,7 @@ export default class MyBooks extends Component {
     render () {
         return (<div>
             <div style={{marginTop: 100}}>
-                <h3 style={{fontWeight: 'bold', marginBottom: 15}}>My Favorite Books</h3>
+                <h2 className="heading">My Favorite Books</h2>
                 {this.props.books.length === 0 ? <span>No favorite books</span> : 
                 <ul class="list-group" style={{margin: 20}}>
                     {this.props.books.map(({title, votes, author}) => (

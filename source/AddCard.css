@@ -14,7 +14,7 @@
 .AddCardTitle {
     font-size: 30px;
     font-family: Helvetica sans-serif;
-    background: #373F51;
+    background: #455A64;
     color: #fff;
 }
 
@@ -29,6 +29,11 @@
 .modal.fade .fromBelow {
     transfrom: translate(0, 100%) !important;
     -webkit-transform: translate(0, 100%) !important;
+}
+
+.modalStyle {
+    box-shadow: 0px 3px 5px -1px rgba(0, 0, 0, 0.2), 0px 5px 8px 0px rgba(0, 0, 0, 0.14), 0px 1px 14px 0px rgba(0, 0, 0, 0.12);
+    border: none !important;
 }
 
 .modal.show .fromBelow {

@@ -69,7 +69,7 @@ export default class Nav extends Component {
                             <span class="nav-link navitemstyle" href="Javascript:void(0);" style={{pointerEvents: 'none'}}>{this.props.loggedInUser}</span>
                             <i class="fa fa-caret-down" style={{position: 'absolute', top: 10, right: -5, cursor: 'pointer', color: '#fff'}} onClick={e => this.toggleOptions(e)}></i>
                             {this.props.showOptions ? 
-                            <ul style={{position: 'absolute', top: 33, right: -5, width: 100, background: '#dedede', listStyle: 'none', padding: '0 5px', boxShadow: '2px 2px 2px gray'}}>
+                            <ul className="logoutOptions">
                                 <li style={{padding: 5, cursor: 'pointer', userSelect: 'none'}} onClick={e => this.logout(e)}>Logout</li>
                             </ul> : ''}
                         </li> : ''}

@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import './Login.css';
 
 export default class Login extends Component {
     login (e) {
@@ -12,7 +13,7 @@ export default class Login extends Component {
 
     render () {
         return (
-            <form onClick={e => e.stopPropagation()} style={{position: 'fixed', zIndex: 100, top: 63, right: 105, padding: 10, background: 'white', boxShadow: '0 0 15px 1px rgba(0,0,0,.4)', minWidth: 280}}>
+            <form onClick={e => e.stopPropagation()} className="loginForm">
                 <div style={{padding: 10}}>{this.props.signup ? 'Sign up for FavBooks' : 'Login to FavBooks'}</div>
                 <div class="form-group">
                     <input type="email" class="form-control" aria-describedby="emailHelp" placeholder="Enter email" value={this.props.email} onChange={e => this.props.changeEmail(e.target.value)}/>
