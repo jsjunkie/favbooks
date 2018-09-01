@@ -1,4 +1,5 @@
 var path = require('path');
+var nodeExternals = require('webpack-node-externals');
 
 var clientConfig = {
     entry: path.resolve(__dirname, "source/index.js"),
@@ -31,6 +32,7 @@ var clientConfig = {
 
 var serverConfig = {
     target: 'node',
+    externals: [nodeExternals()],
     entry: path.resolve(__dirname, "server/index.js"),
     output: {
         filename: 'server.js',
